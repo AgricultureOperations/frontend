@@ -1,4 +1,4 @@
-import styles from "./AuthPage.module.css";
+import styles from "../../../styles/features/auth/pages/AuthPage.module.scss";
 import Spinner from "../../../shared/components/Spinner";
 import SharedError from "../../../shared/components/SharedError";
 import useRegister from "../hooks/useRegister";

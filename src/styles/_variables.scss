@@ -1,0 +1,51 @@
+//"What role does this color play?"
+//taking of AuthPage.css -> You categorize colors by role, not by appearance.
+/*
+1. Brand (Primary / Secondary)
+Used for:
+Buttons
+Links
+Important highlights
+2. Neutral
+Used for:
+Backgrounds
+Borders
+Text
+Layout
+3. Semantic
+Used for meaning:
+Success (green)
+Error (red)
+Warning (yellow)
+Info (blue)
+4. State
+Used for:
+Hover
+Active
+Disabled
+Focus
+
+What the Numbers Mean
+The number represents the intensity of the color.
+Typical scale:
+Shade	Meaning
+50	Very very light
+100	Very light
+200	Light
+300	Soft
+400	Medium light
+500	Base / Default
+600	Slightly darker
+700	Dark
+800	Very dark
+900	Extremely dark
+*/
+$primary-500: #1d4ed8;
+$primary-600: #2563eb;
+$neutral-900: #242424;
+$neutral-100: #ffffff;
+$neutral-300: #cbd5e1;
+$error-500: #ef4444;
+
+$border-radius: 6px;
+$transition: all 0.2s ease;

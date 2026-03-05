@@ -1,0 +1,47 @@
+@use "../../../variables" as *;
+@use "../../../mixins" as *;
+
+.container {
+    @include flex-center;   
+    background-color: $neutral-900;
+    color: $neutral-100;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: $primary-500;
+}
+
+.form 
+.formGroup{
+    @include flex-center;
+    width: 100%;
+}
+
+.input {
+    width: 300px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid $neutral-100;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.button {
+    @include button-base;
+    width: 300px;
+    background-color: $primary-600;
+    color: $neutral-100;
+    font-size: 1rem;
+
+    &:hover {
+        opacity: 0.9;
+        //background-color: $primary-600;
+    }
+}
+
+.error{
+    color: $error-500;
+    font-size: 0.875 rem;
+}
