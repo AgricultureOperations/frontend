@@ -11,9 +11,12 @@ body {
 
 p{
   font-size: 0.75rem;
-  margin-bottom: 1.5rem;
-  color: $neutral-100;
-  text-align: center
+  color: $neutral-600;
+  text-align: center;
+  a{
+    color: $neutral-600;
+    text-decoration: none;
+  }
 }
 /*h1 {
   font-size: 2rem;

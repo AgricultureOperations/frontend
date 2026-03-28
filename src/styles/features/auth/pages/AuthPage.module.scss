@@ -3,19 +3,25 @@
 
 .container {
     @include flex-center;
-    min-height: 100vh; 
+    min-height: 70vh; 
     justify-content: center;
     padding: 1rem;
 }
 
 .card{
     width: 100%;
-    max-width: 60vh;
+    max-width: 26vw;
+    min-width: 26vw;
     background-color: $neutral-700;
     border: 1px solid $neutral-700;
     border-radius: $border-radius;
     padding: 20px;
-    
+}
+
+.logo{
+    width: 180px;
+    height: auto;
+    margin-bottom: 1rem;
 }
 
 .title {
@@ -25,30 +31,38 @@
     text-align: center
 }
 
-.form 
-.formGroup{
-    @include flex-center;
-    width: 100%;
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    //gap: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; //aligns children to the left
 }
 
 .input {
-    width: 200px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid $neutral-100;
+    width: 100%;
+    padding: 0.75rem;
+    //margin-bottom: 1rem;
+    border: 1px solid $neutral-600;
     border-radius: 6px;
-    font-size: 1rem;
-
+    font-size: 0.75rem;
     background-color: transparent;
-    color: $neutral-100
+    color: $neutral-600;
+    box-sizing: border-box;
 }
 
 .button {
     @include button-base;
-    width: 300px;
+    width: 100%;
     background-color: $primary-600;
     color: $neutral-100;
-    font-size: 1rem;
+    font-size: 0.75rem;
 
     &:hover {
         opacity: 0.9;
@@ -57,13 +71,15 @@
 }
 
 .error{
+    min-height: 0.7rem;
     color: $error-500;
-    font-size: 0.875 rem;
+    font-size: 0.65rem;
 }
 
 @media (min-width: $bp-tablet){
     .card{
-        max-width: 400px;
+        max-width: 25vw;
+        min-width: 25vw;
         padding: 25px 35px;
     }
 
@@ -74,7 +90,8 @@
 
 @media (min-width: $bp-desktop){
     .card{
-        max-width: 420px;
+        max-width: 26vw;
+        min-width: 26vw;
         padding: 30px 40px;
     }
 
@@ -85,6 +102,7 @@
 
 @media (min-width: $bp-large){
    .card{
-        max-width: 450px;
+        max-width: 28vw;
+        min-width: 28vw;
    } 
 }
