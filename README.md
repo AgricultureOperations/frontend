@@ -13,6 +13,7 @@ This project follows a scalable, domain-driven architecture with clean separatio
 ## 🚀 Features
 
 - User authentication (Login & Register)
+- Table built with TanStack Table
 - Protected routes with token-based access control
 - **Redux Toolkit** state management for auth and registration
 - Typed Redux hooks (`useAppDispatch`, `useAppSelector`) for type-safe state access
@@ -36,6 +37,7 @@ This project follows a scalable, domain-driven architecture with clean separatio
 - React Router
 - ESLint
 - Yup
+- TanStack Table
 
 ---
 
@@ -47,12 +49,25 @@ src/
  │
  ├── features/
  │    ├── auth/
- │    │    ├── actions/       # API calls (login, register)
+ │    │    ├── apis/       # API calls (login, register)
  │    │    ├── hooks/         # useLogin, useRegister
  │    │    ├── interfaces/    # Response & request types
  │    │    ├── pages/         # LoginPage, RegisterPage
- │    │    ├── store/         # Redux slice(s) for auth   
+ │    │    ├── states/         # Redux slice(s) for auth   
  │    │    └── validations/   # Form validation schemas
+ │    │
+ │    ├── dashboard/          # Dashboard domain logic
+ │    │    ├── components/    
+ │    │    ├── interfaces/    
+ │    │    ├── pages/         # DashboardPage
+ │    │    └── validations/   # Form validation schemas
+ │    │
+ │    ├── orders/             # Orders-related domain logic   
+ │    │    ├── components/    # OrdersTable
+ │    │    ├── data/          # dataMock
+ │    │    ├── hooks/         # useOrdersTable
+ │    │    ├── interfaces/    # interfaces
+ │    │    └── pages/         # OrdersPage
  │    │
  │    └── users/              # User-related domain logic
  │         ├── actions/       # API calls (fetch-users)
@@ -95,6 +110,8 @@ The backend handles:
 - Business logic & database operations
 
 - Secure endpoints
+
+- Currently using mock data for Orders module
 
 ---
 
@@ -202,6 +219,8 @@ useEffect(() => {
 
 - ✅ Centralized error handling per domain 
 
+- ✅ Use of TanStack Table for flexible data handling
+
 ---
 
 ## 🔮 Future Improvements
@@ -211,6 +230,8 @@ useEffect(() => {
 - Token refresh mechanism
 
 - Global API error interceptor
+
+- Replace mock data with real backend API(order-service)
 
 - Additional feature slices for other domains (users)
 
