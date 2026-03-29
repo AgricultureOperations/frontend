@@ -57,6 +57,24 @@
     box-sizing: border-box;
 }
 
+.passwordInputContainer{
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    .input{
+        padding-right: 30px;
+    }
+}
+
+.passwordToogleIcon{
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    background-color: transparent
+}
+
+
 .button {
     @include button-base;
     width: 100%;

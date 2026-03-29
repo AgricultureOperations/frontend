@@ -4,10 +4,11 @@ import Spinner from '../../../shared/components/Spinner';
 import SharedError from '../../../shared/components/SharedError';
 import { useLogin } from '../hooks/useLogin';
 import plantIcon from '../../../assets/plant-logo.png'
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 const LoginPage = () => {
-    const {email,password,loading,error,validationErrors,setEmail,setPassword,handleLogin} = useLogin();
+    const {email,password,passwordType,loading,error,validationErrors,setEmail,setPassword,handleLogin,handlePasswordType} = useLogin();
     return (
         <div className={styles.container}>
             <div className={styles.card}>
@@ -42,14 +43,22 @@ const LoginPage = () => {
                         </p>
                     </div>
                     <div className={styles.formGroup}>
-                        <input
-                            className={styles.input}
-                            type="password"
-                            placeholder='Password'
-                            value={password}
-                            onChange={(e)=> setPassword(e.target.value)}
-                            required
-                        />
+                        <div className={styles.passwordInputContainer}>
+                            <input
+                                className={styles.input}
+                                type={passwordType}
+                                placeholder='Password'
+                                value={password}
+                                onChange={(e)=> setPassword(e.target.value)}
+                                required
+                            />
+                            <span
+                                className={styles.passwordToogleIcon}
+                                onClick={handlePasswordType} 
+                            >
+                                {passwordType === 'text' ?<FaEye/>:<FaEyeSlash/>}
+                            </span>
+                        </div>
                         <p className={styles.error}>
                             {validationErrors.password || ''}
                         </p>

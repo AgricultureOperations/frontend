@@ -13,6 +13,13 @@ export const useLogin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [passwordType, setPasswordType] = useState<string>('text');
+    const handlePasswordType = () => {
+        if(passwordType === 'text')
+            setPasswordType('password')
+        else
+            setPasswordType('text')
+    };
     const [validationErrors, setValidationErrors] = useState<{
         email?: string,
         password?: string
@@ -49,12 +56,14 @@ export const useLogin = () => {
     return {
         email
         ,password
+        ,passwordType
         ,loading
         ,error 
         ,validationErrors
         ,setEmail
         ,setPassword
         ,handleLogin
+        ,handlePasswordType
     } 
     
 }
