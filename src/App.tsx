@@ -6,7 +6,7 @@ import './App.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage, RegisterPage } from './features/auth';
 import { ProtectedRoute } from './routes/ProtectedRoute';
-import { UserPage } from './features/users';
+import { UsersPage } from './features/users';
 
 function App() {
   // const title: string = 'Buscardor de correos'
@@ -23,7 +23,7 @@ function App() {
         <Route path='/register' element={<RegisterPage/>} />
         <Route path='/dashboard' element={
           <ProtectedRoute>
-            <UserPage />
+            <UsersPage />
           </ProtectedRoute>
         } />
       </Routes>
