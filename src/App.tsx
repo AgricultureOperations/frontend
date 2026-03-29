@@ -7,6 +7,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage, RegisterPage } from './features/auth';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { UsersPage } from './features/users';
+import { DashboardPage } from './features/dashboard';
+import { OrdersPage } from './features/orders';
 
 function App() {
   // const title: string = 'Buscardor de correos'
@@ -23,7 +25,17 @@ function App() {
         <Route path='/register' element={<RegisterPage/>} />
         <Route path='/dashboard' element={
           <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/users' element={
+          <ProtectedRoute>
             <UsersPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/orders' element={
+          <ProtectedRoute>
+            <OrdersPage />
           </ProtectedRoute>
         } />
       </Routes>
