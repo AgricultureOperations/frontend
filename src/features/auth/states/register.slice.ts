@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RegisterRequest } from "../interfaces/register.request";
-import { postRegister } from "../actions/post-register.action";
+import { postRegister } from "../apis/post-register.action";
 
 interface RegisterState {
     success: boolean;

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { LoginRequest } from '../interfaces/login.request';
-import { postLogin } from '../actions/post-login.action';
+import { postLogin } from '../apis/post-login.action';
 import axios from "axios";
 
 interface AuthState {

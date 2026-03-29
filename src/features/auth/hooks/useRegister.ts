@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ValidationError } from 'yup';
 import { registerSchema } from "../validations/register.validation";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { registerThunk } from "../store/register.slice";
+import { registerThunk } from "../states/register.slice";
 
 const useRegister = () => {
     const dispatch = useAppDispatch();

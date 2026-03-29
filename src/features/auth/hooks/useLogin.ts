@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { loginSchema } from "../validations/login.validation";
 import { ValidationError } from "yup";
-import { loginThunk } from "../store/auth.slice";
+import { loginThunk } from "../states/auth.slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 export const useLogin = () => {

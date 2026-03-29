@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchUsers } from "../actions/fetch-users.action";
+import { fetchUsers } from "../apis/fetch-users.action";
 import { User } from "../interfaces/user.interface";
 
 export const useUser = () => {
