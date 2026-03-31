@@ -6,16 +6,16 @@ interface Props {
 export const OrdersTable = ({ data }:Props) => {
     const columns = [
         {
-            header: 'Order ID',
-            accessorKey: 'id'
+            header: 'Customer ID',
+            accessorKey: 'customerId'
         },
         {
             header: 'Date',
-            accessorKey: 'date'
+            accessorKey: 'createdAt'
         },
         {
             header: 'Status',
-            accessorKey: 'status'
+            accessorKey: 'status.name'
         },
         {
             header: 'Total',

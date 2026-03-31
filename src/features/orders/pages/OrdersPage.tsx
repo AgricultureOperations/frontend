@@ -2,11 +2,11 @@ import { OrdersTable } from "../components/OrdersTable";
 import { useOrdersTable } from "../hooks/useOrdersTable";
 
 const OrdersPage = () => {
-  const { data } = useOrdersTable();
+  const { orders } = useOrdersTable();
   return (
     <div>
       <h1>Orders</h1>
-      <OrdersTable data={data}/>
+      <OrdersTable data={orders}/>
     </div>
   )
 };

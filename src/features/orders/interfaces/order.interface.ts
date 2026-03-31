@@ -1,4 +1,6 @@
-import { OrderItem } from "./orderItem.interface";
+import { OrderStatus } from "./orderStatus.interface";
+
+/*import { OrderItem } from "./orderItem.interface";
 
 export interface Order{
     id: string;
@@ -13,4 +15,12 @@ export interface Order{
     items: OrderItem[];
     shippingAddress: string;
     paymentMethod: 'credit_card' | 'debit_card';
+}*/
+export interface Order{
+    id: string;
+    customerId: string;
+    total:number;
+    createdAt: string;
+    statusId: number;
+    status: OrderStatus;
 }
