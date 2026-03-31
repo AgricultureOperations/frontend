@@ -10,8 +10,6 @@
 
 .card{
     width: 100%;
-    max-width: 26vw;
-    min-width: 26vw;
     background-color: $neutral-700;
     border: 1px solid $neutral-700;
     border-radius: $border-radius;
@@ -97,7 +95,7 @@
 @media (min-width: $bp-tablet){
     .card{
         max-width: 25vw;
-        min-width: 25vw;
+        min-width: auto;
         padding: 25px 35px;
     }
 
@@ -109,7 +107,6 @@
 @media (min-width: $bp-desktop){
     .card{
         max-width: 26vw;
-        min-width: 26vw;
         padding: 30px 40px;
     }
 
@@ -121,6 +118,5 @@
 @media (min-width: $bp-large){
    .card{
         max-width: 28vw;
-        min-width: 28vw;
    } 
 }
