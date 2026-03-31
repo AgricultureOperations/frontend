@@ -1,4 +1,5 @@
 # 🌱 AgriOps Web
+🌐 **Live Demo:** https://agricultureops.netlify.app
 
 <p>
 Frontend client application for the AgriOps platform, built with <strong>React</strong>, <strong>Vite</strong>, and <strong>TypeScript</strong>.
@@ -120,7 +121,12 @@ The backend handles:
 Create a .env file in the root directory:
 
 ```bash
-VITE_API_BASE_URL=http://localhost:3000/api
+# Local development
+VITE_BITACORA_BASE_URL=http://localhost:3000/api/v1
+
+# For production (deployed backend)
+# Replace <YOUR_RENDER_URL> with your actual Render deployment URL
+VITE_BITACORA_BASE_URL=https://<YOUR_RENDER_URL>/api/v1
 ```
 
 An .env.example file is included for reference.
@@ -221,6 +227,10 @@ useEffect(() => {
 
 - ✅ Use of TanStack Table for flexible data handling
 
+- ✅ Deployment on Netlify  
+
+- ✅ CI/CD pipeline with GitHub Actions
+
 ---
 
 ## 🔮 Future Improvements
@@ -236,10 +246,6 @@ useEffect(() => {
 - Additional feature slices for other domains (users)
 
 - Unit & integration testing (Vitest + Testing Library)
-
-- CI/CD pipeline with GitHub Actions
-
-- Deployment (Netlify / Vercel)
 
 ---
 
