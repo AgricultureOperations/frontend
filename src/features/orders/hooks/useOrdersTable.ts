@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { mockOrders } from "../data/dataMock";
-import { Order } from "../interfaces/order.interface";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { orderThunk } from "../states/order.slice";
 
@@ -13,7 +11,7 @@ export const useOrdersTable = () => {
 
     useEffect(() => {
         const loadOrders = async () => {
-            const response = await dispatch(orderThunk(undefined))
+            await dispatch(orderThunk(undefined))
             //setData(response.payload)
         }
         loadOrders();
@@ -32,5 +30,9 @@ export const useOrdersTable = () => {
         setData(data);
     }, [])*/
     
-    return {orders};
+    return {
+        orders,
+        loading,
+        error
+    };
 }
