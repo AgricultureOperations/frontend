@@ -14,12 +14,26 @@ const useRegister = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    /*const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null)*/
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [passwordType, setPasswordType] = useState<"text" | "password">('password');
+    const [confirmPasswordType, setConfirmPasswordType] = useState<"text" | "password">('password');
+    const handlePasswordType = () => {
+        if(passwordType === 'text')
+            setPasswordType('password')
+        else
+            setPasswordType('text')
+    };
+    const handleConfirmPasswordType = () => {
+        if(confirmPasswordType === 'text')
+            setConfirmPasswordType('password')
+        else
+            setConfirmPasswordType('text')
+    };
     
     const [validationError, setValidationError] = useState<{
         email?: string,
-        password?: string
+        password?: string,
+        confirmPassword?: string
     }>({})
     const handleRegister = async () => {
         //setLoading(true);
@@ -27,15 +41,15 @@ const useRegister = () => {
         setValidationError({});   
         try {
             await registerSchema.validate(
-                { email, password },
+                { email, password, confirmPassword },
                 { abortEarly: false }
             );
         } catch (error) {
             if( error instanceof ValidationError ){
-                const errors: { email?: string; password?: string} = {};
+                const errors: { email?: string; password?: string, confirmPassword?: string} = {};
                 error.inner.forEach((e) => {
                     if( e.path ){
-                        errors[e.path as "email" | "password"] = e.message
+                        errors[e.path as "email" | "password" | "confirmPassword"] = e.message
                     }
                 });
                 setValidationError(errors);
@@ -43,40 +57,35 @@ const useRegister = () => {
             //setLoading(false);
             return;
         }
-        
-        /*try {
-            const response = await postRegister(email,password); 
-            console.log(response);
-            if(response != null){            
-                navigate('/login');
-            }
-        } catch (error) {
-            if(error instanceof Error){
-                setError(error.message);
-            }else{
-                setError("Something went wrong")
-            }
-        }finally{
-            setLoading(false)
-        }*/
-       dispatch(registerThunk({email,password}));
+        dispatch(registerThunk({email,password}));
     } 
 
     useEffect(() => {
         if( success ){
-            navigate("/login", { replace: true})
+            HandleBack()
         }
     }, [success])
+
+    const HandleBack = () => {
+        navigate("/login", { replace: true})
+    };
     
     return {
         email
         ,password
+        ,confirmPassword
+        ,passwordType
+        ,confirmPasswordType
         ,loading
         ,error
         ,validationError
         ,setEmail
         ,setPassword
+        ,setConfirmPassword
         ,handleRegister
+        ,handlePasswordType
+        ,handleConfirmPasswordType
+        ,HandleBack
     };
 }
  

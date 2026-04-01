@@ -3,7 +3,7 @@ import styles from "../../../styles/features/auth/pages/AuthPage.module.scss";
 import SharedError from '../../../shared/components/SharedError';
 import { useLogin } from '../hooks/useLogin';
 import plantIcon from '../../../assets/plant-logo.png'
-import LoginForm from '../components/LoginForm';
+import AuthForm from '../components/AuthForm';
 
 
 const LoginPage = () => {
@@ -22,7 +22,7 @@ const LoginPage = () => {
                     Don't have an account yet?{" "}
                     <Link to="/register">Sign up Here</Link>
                 </p>
-                <LoginForm 
+                <AuthForm 
                     classNameForm={styles.form}
                     classNameFormGroup={styles.formGroup}
                     classNamePasswordInputContainer={styles.passwordInputContainer}
@@ -31,9 +31,11 @@ const LoginPage = () => {
                     classNameError={styles.error}
                     classNameButton={styles.button}
                     loading={loading}
+                    buttonName='Sign in'
                     //fields
                     fields={[
                         {
+                            name: 'email',
                             type: 'email',
                             placeholder: 'email',
                             value:email,
@@ -42,6 +44,7 @@ const LoginPage = () => {
                             isRequired:true,
                         },
                         {
+                            name: 'password',
                             type: passwordType,
                             placeholder: 'Password',
                             value:password,

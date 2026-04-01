@@ -4,6 +4,7 @@ interface Props {
     classNameFormGroup: string;
     classNameInput: string;
     classNameError: string;
+    name: string;
     type: string;
     placeholder: string;
     value: string;
@@ -18,12 +19,13 @@ interface Props {
     HandlePasswordType?: () => void;
 
 }
-const CustomInput = ({classNameFormGroup,classNameInput,classNameError,type,placeholder,value,HandleChange,isRequired = false,validationError, isPasswordType = false,passwordType,classNamePasswordToogleIcon,HandlePasswordType}:Props) => {
+const CustomInput = ({classNameFormGroup,classNameInput,classNameError,name,type,placeholder,value,HandleChange,isRequired = false,validationError, isPasswordType = false,passwordType,classNamePasswordToogleIcon,HandlePasswordType}:Props) => {
   return (
     <>
         <div className={classNameFormGroup}>
             <input
                 className={classNameInput}
+                name={name}
                 type={isPasswordType ? passwordType : type}
                 placeholder={placeholder}
                 value={value}

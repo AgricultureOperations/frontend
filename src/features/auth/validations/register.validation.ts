@@ -8,5 +8,9 @@ export const registerSchema = yup.object({
         .string()
         .required("Password is required")
         .min(8,"Password must be at least 8 characters")
-        .matches(/[A-Z]/,"Password must contain at leat one uppercase letter")
+        .matches(/[A-Z]/,"Password must contain at leat one uppercase letter"),
+    confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], "Passwords must match")
+        .required("Confirm your password")
 });

@@ -1,6 +1,7 @@
 import CustomInput from "../../../shared/components/CustomInput";
 import Spinner from "../../../shared/components/Spinner";
 interface inputField {
+    name: string;
     type: string;
     placeholder: string;
     value: string;
@@ -23,11 +24,12 @@ interface Props {
     classNameError: string;
     classNameButton: string;
     loading: boolean;
+    buttonName: string;
     //fields
     fields: inputField[]
 
 }
-const LoginForm = ({classNameForm, classNameFormGroup, classNamePasswordInputContainer, HandleLogin, classNameInput, classNameError, fields, classNameButton, loading}:Props) => {
+const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputContainer, HandleLogin, classNameInput, classNameError, fields, classNameButton, loading, buttonName}:Props) => {
   return (
     <form className={classNameForm}
         onSubmit={(e) => {
@@ -40,6 +42,7 @@ const LoginForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCon
                 classNameFormGroup={classNameFormGroup}
                 classNameInput={classNameInput}
                 classNameError={classNameError}
+                name={field.name}
                 type={field.type}
                 placeholder={field.placeholder}
                 value={field.value}
@@ -53,6 +56,7 @@ const LoginForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCon
                     classNameFormGroup={classNamePasswordInputContainer}
                     classNameInput={classNameInput}
                     classNameError={classNameError}
+                    name={field.name}
                     type={field.type}
                     placeholder={field.placeholder}
                     value={field.value}
@@ -67,9 +71,9 @@ const LoginForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCon
             </div>)
         )}
         <button type="submit" className={classNameButton} disabled={loading} onClick={HandleLogin}>
-            {loading ? <Spinner />: 'Sign in'}
+            {loading ? <Spinner />: buttonName}
         </button>
     </form>
   )
 }
-export default LoginForm;
+export default AuthForm;
