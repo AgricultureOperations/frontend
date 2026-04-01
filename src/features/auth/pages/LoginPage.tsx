@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
 import styles from "../../../styles/features/auth/pages/AuthPage.module.scss";
-import Spinner from '../../../shared/components/Spinner';
 import SharedError from '../../../shared/components/SharedError';
 import { useLogin } from '../hooks/useLogin';
 import plantIcon from '../../../assets/plant-logo.png'
-import CustomInput from '../../../shared/components/CustomInput';
+import LoginForm from '../components/LoginForm';
 
 
 const LoginPage = () => {
@@ -23,44 +22,39 @@ const LoginPage = () => {
                     Don't have an account yet?{" "}
                     <Link to="/register">Sign up Here</Link>
                 </p>
-                <form className={styles.form}
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleLogin();
-                    }}
-                    >
-                    <CustomInput 
-                        classNameFormGroup={styles.formGroup}
-                        classNameInput={styles.input}
-                        classNameError={styles.error}
-                        type="email"
-                        placeholder='Email'
-                        value={email}
-                        HandleChange={(e)=> setEmail(e.target.value)}
-                        isRequired={true}
-                        validationError={validationErrors.email}
-                    />
-                    <div className={styles.formGroup}>
-                        <CustomInput 
-                            classNameFormGroup={styles.passwordInputContainer}
-                            classNameInput={styles.input}
-                            classNameError={styles.error}
-                            type={passwordType}
-                            placeholder='Password'
-                            value={password}
-                            HandleChange={(e)=> setPassword(e.target.value)}
-                            isRequired={true}
-                            validationError={validationErrors.password}
-                            isPasswordType={true}
-                            passwordType={passwordType}
-                            classNamePasswordToogleIcon={styles.passwordToogleIcon}
-                            HandlePasswordType={handlePasswordType}
-                        />
-                    </div>
-                    <button type="submit" className={styles.button} disabled={loading} onClick={handleLogin}>
-                        {loading ? <Spinner />: 'Sign in'}
-                    </button>
-                </form>
+                <LoginForm 
+                    classNameForm={styles.form}
+                    classNameFormGroup={styles.formGroup}
+                    classNamePasswordInputContainer={styles.passwordInputContainer}
+                    HandleLogin={handleLogin}
+                    classNameInput={styles.input}
+                    classNameError={styles.error}
+                    classNameButton={styles.button}
+                    loading={loading}
+                    //fields
+                    fields={[
+                        {
+                            type: 'email',
+                            placeholder: 'email',
+                            value:email,
+                            HandleChange:(e) => setEmail(e.target.value),
+                            validationError:validationErrors.email,
+                            isRequired:true,
+                        },
+                        {
+                            type: passwordType,
+                            placeholder: 'Password',
+                            value:password,
+                            HandleChange:(e) => setPassword(e.target.value),
+                            validationError:validationErrors.password,
+                            isRequired:true,
+                            isPasswordType:true,
+                            classNamePasswordToogleIcon:styles.passwordToogleIcon,
+                            passwordType:passwordType,
+                            HandlePasswordType:handlePasswordType
+                        }
+                    ]}
+                />
             </div>
         </div>
     )
