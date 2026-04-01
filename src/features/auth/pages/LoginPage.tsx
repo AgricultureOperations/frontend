@@ -4,7 +4,7 @@ import Spinner from '../../../shared/components/Spinner';
 import SharedError from '../../../shared/components/SharedError';
 import { useLogin } from '../hooks/useLogin';
 import plantIcon from '../../../assets/plant-logo.png'
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import CustomInput from '../../../shared/components/CustomInput';
 
 
 const LoginPage = () => {
@@ -29,39 +29,33 @@ const LoginPage = () => {
                         handleLogin();
                     }}
                     >
+                    <CustomInput 
+                        classNameFormGroup={styles.formGroup}
+                        classNameInput={styles.input}
+                        classNameError={styles.error}
+                        type="email"
+                        placeholder='Email'
+                        value={email}
+                        HandleChange={(e)=> setEmail(e.target.value)}
+                        isRequired={true}
+                        validationError={validationErrors.email}
+                    />
                     <div className={styles.formGroup}>
-                        <input
-                            className={styles.input}
-                            type="email"
-                            placeholder='Email'
-                            value={email}
-                            onChange={(e)=> setEmail(e.target.value)}
-                            required
+                        <CustomInput 
+                            classNameFormGroup={styles.passwordInputContainer}
+                            classNameInput={styles.input}
+                            classNameError={styles.error}
+                            type={passwordType}
+                            placeholder='Password'
+                            value={password}
+                            HandleChange={(e)=> setPassword(e.target.value)}
+                            isRequired={true}
+                            validationError={validationErrors.password}
+                            isPasswordType={true}
+                            passwordType={passwordType}
+                            classNamePasswordToogleIcon={styles.passwordToogleIcon}
+                            HandlePasswordType={handlePasswordType}
                         />
-                        <p className={styles.error}>
-                            {validationErrors.email || ''}
-                        </p>
-                    </div>
-                    <div className={styles.formGroup}>
-                        <div className={styles.passwordInputContainer}>
-                            <input
-                                className={styles.input}
-                                type={passwordType}
-                                placeholder='Password'
-                                value={password}
-                                onChange={(e)=> setPassword(e.target.value)}
-                                required
-                            />
-                            <span
-                                className={styles.passwordToogleIcon}
-                                onClick={handlePasswordType} 
-                            >
-                                {passwordType === 'text' ?<FaEye/>:<FaEyeSlash/>}
-                            </span>
-                        </div>
-                        <p className={styles.error}>
-                            {validationErrors.password || ''}
-                        </p>
                     </div>
                     <button type="submit" className={styles.button} disabled={loading} onClick={handleLogin}>
                         {loading ? <Spinner />: 'Sign in'}

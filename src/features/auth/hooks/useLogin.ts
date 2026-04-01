@@ -13,7 +13,7 @@ export const useLogin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [passwordType, setPasswordType] = useState<string>('text');
+    const [passwordType, setPasswordType] = useState<"text" | "password">('password');
     const handlePasswordType = () => {
         if(passwordType === 'text')
             setPasswordType('password')
