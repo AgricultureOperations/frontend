@@ -49,7 +49,7 @@ export const useLogin = () => {
 
     useEffect(() => {
         if( token ){
-           navigate("/dashboard", { replace: true }) 
+           navigate("/orders", { replace: true }) 
         }
     }, [token])
     

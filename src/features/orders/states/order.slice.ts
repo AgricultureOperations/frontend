@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Order } from "../interfaces/order.interface";
 import axios from "axios";
-import { orderApi } from "../../../api/order.api";
+import { getOrdersApi } from "../apis/get-orders.api";
 
 interface OrderState {
     orders: Order[];
@@ -23,8 +23,8 @@ void,
     "api/orders"
     ,async (_: void,{ rejectWithValue }) => {
         try{
-            const data = await orderApi.get("api/orders");
-            return data.data;
+            const data = await getOrdersApi();
+            return data;
         }catch(error){
             if(axios.isAxiosError(error)){
                 return rejectWithValue(
