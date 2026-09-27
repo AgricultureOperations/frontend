@@ -51,6 +51,40 @@ docker build -t agriops-web . && docker run -p 5173:8080 agriops-web
 
 New domains should copy this shape and register their slice in `src/store/store.ts`.
 
+## UI & Layout Guidelines
+
+The authenticated app shell follows the Admisiones Online back-office pattern. Every protected route renders inside `AppLayout` (`src/shared/components/AppLayout.tsx`): `Header` on top, `Sidebar` on the left, and the page in `<main>` through `<Outlet />`. New protected pages go under that layout route in `App.tsx`. Don't give a page its own header or nav.
+
+### Header (`Header.tsx`)
+- **Left:** logo (`assets/plant-logo.png`) and the app title `AgriOPS`.
+- **Right, in this order:** theme toggle (Dark/Light), notifications bell, user badge (initials avatar + uppercase name), logout button.
+- The user name is **derived from `auth.email`** by `getDisplayNameFromEmail` (for example `edward.cruz@…` → `EDWARD CRUZ`). Never hardcode it. auth-service issues no name field, and the JWT must not be decoded for UI info (see `architecture.md`).
+- Icon-only buttons need an `aria-label`. The labels are `Switch to dark mode` / `Switch to light mode`, `Notifications` and `Log out`. The Playwright specs find the toggle and logout buttons by these names, so renaming one breaks the tests.
+- The notifications bell is visual only, with no backend or handler yet.
+
+### Sidebar (`Sidebar.tsx`)
+- Vertical icon + label list built from the `navItems` array with `NavLink`. The active item is a tinted primary pill (`navItemActive`), not a solid fill.
+- Current routes: `Inicio` → `/dashboard`, `Orders` → `/orders` (replaces the reference design's "Solicitudes"; there is no `/solicitudes` route), `Users` → `/users`.
+- Pinned to the bottom: a disabled `Settings (coming soon)` button. This is the slot for **`Maintainers` → `/maintainers`** (master data and system settings). That route and page **do not exist yet**. When you build it, replace the disabled button with a `NavLink` to `/maintainers`, keep it at the bottom, and add the route under `AppLayout`.
+- Nav labels use English resource names (`Orders`, `Maintainers`, `Users`). The exception is `Inicio`.
+
+### Pages
+- **Dashboard:** greeting header `Hola, {USER_NAME}` (display name, uppercased) with the subtitle `Panel de control AgriOPS`, followed by a row of `StatCard`s.
+- **List pages** (such as `Orders`): title + Spanish subtitle, then a table.
+- **Tables:** headers are uppercase, small and muted (`text-transform: uppercase`, `var(--header-text)`). Status columns render a badge component (`OrderStatusBadge`), not plain text. Only terminal states take semantic colors (Pending → warning, Delivered → good, Cancelled → critical). In-progress states stay neutral. An empty list renders `EmptyState`, not an empty table.
+- **Filter bar (planned, not built):** a horizontal filter bar above list tables with a `FILTROS APLICADOS:` indicator showing the active filters. Filter state belongs in the page's hook, not in Redux (see `architecture.md` → State management). The older `SearchBar.tsx` (used only by `UsersPage`) uses a global class name instead of a CSS module and has no dark-mode styles. Don't build the filter bar on it.
+
+### Theming and design tokens
+- `useTheme` (`src/shared/hooks/useTheme.ts`) holds the theme in component state and `AppLayout` puts `data-theme="light|dark"` on its root. The theme is **not persisted**, because `localStorage` is reserved for the token.
+- Colors come from `src/styles/_variables.scss` (role + intensity, e.g. `$primary-700`, `$neutral-400`). The app shell's dark palette uses `$dark-shell-*`, kept separate from the login page's `$dark-page-*`.
+- Each component module declares CSS custom properties for light mode and overrides them under `[data-theme='dark'] & { … }`. Rules then use only `var(--…)`. Follow this pattern for every new component so both themes work without duplicate rules.
+
+### Testing
+- Playwright E2E tests live in `tests/`, separate from the Vitest specs in `test/`. Read `tests/README.md` before changing them.
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard` and `/orders` in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
+- A new shell route needs light and dark baselines in the visual spec plus a sidebar-routing assertion in `app-layout.spec.ts`.
+- After an intended style or token change, check the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.
+
 ## Environment
 
 Vite inlines `VITE_*` variables **at build time** (see `.env.example`):
