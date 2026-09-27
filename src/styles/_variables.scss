@@ -55,6 +55,13 @@ $neutral-400: #9ca3af; // ECOTEC login: placeholder, icon buttons
 $neutral-500: #6b7280; // ECOTEC login: secondary text, subtitles
 $error-500: #ef4444;
 
+/*status palette (fixed roles: good/warning/serious/critical - never reused for series identity)*/
+$status-good: #0ca30c;
+$status-warning: #fab219;
+$status-serious: #ec835a;
+$status-critical: #d03b3b;
+$status-warning-text: #92400e; // status-warning's fill is light-mode sub-3:1; this is the readable text/icon pairing
+
 /*surfaces (backgrounds that sit between neutral-100 white and borders)*/
 $surface-page: #f5f7fa;
 $surface-muted: #f9fafb; // input background
@@ -63,6 +70,10 @@ $surface-muted: #f9fafb; // input background
 $dark-page-edge: #1a0a2e; // gradient start and end
 $dark-page-mid: #0d0d0d;  // gradient middle
 $dark-card: rgba(13, 13, 20, 0.8);
+/*app shell dark theme (reference: dev-admisiones-online.ecotec.edu.ec/dashboard) - kept separate
+from the login page's $dark-page-mid/$dark-page-edge so tuning one never shifts the other's baseline*/
+$dark-shell-bg: #0a0a14;   // main content background
+$dark-shell-surface: #0d0d14; // sidebar background (solid version of $dark-card's channels)
 $dark-border: rgba(255, 255, 255, 0.08);
 $dark-surface: rgba(255, 255, 255, 0.03); // input background
 $dark-surface-hover: rgba(255, 255, 255, 0.05); // theme toggle background

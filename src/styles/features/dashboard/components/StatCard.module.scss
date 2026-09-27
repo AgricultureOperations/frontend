@@ -1,0 +1,42 @@
+@use "../../../variables" as *;
+
+.card {
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+    --value: #{$neutral-800};
+    --label: #{$neutral-500};
+
+    [data-theme='dark'] & {
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+        --value: #{$neutral-100};
+        --label: #{$neutral-400};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: $gap-md;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    min-width: 140px;
+    // Explicit, so this KPI tile stays centered regardless of the page-level
+    // text-align (AppLayout's .content resets #root's inherited center to left).
+    text-align: center;
+}
+
+.value {
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--value);
+}
+
+.label {
+    font-size: $font-size-xs;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: $font-weight-medium;
+    color: var(--label);
+}

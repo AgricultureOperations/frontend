@@ -1,0 +1,42 @@
+@use "../../../variables" as *;
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    font-weight: $font-weight-semibold;
+    border-radius: $radius-sm;
+    white-space: nowrap;
+
+    svg {
+        font-size: 13px;
+    }
+}
+
+.good {
+    color: $status-good;
+    background-color: rgba($status-good, 0.12);
+}
+
+.warning {
+    color: $status-warning-text;
+    background-color: rgba($status-warning, 0.2);
+}
+
+.critical {
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.12);
+}
+
+.neutral {
+    color: $neutral-600;
+    background-color: rgba($neutral-600, 0.12);
+
+    [data-theme='dark'] & {
+        color: $neutral-300;
+        background-color: rgba($neutral-300, 0.12);
+    }
+}

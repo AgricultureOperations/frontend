@@ -1,0 +1,50 @@
+@use "../../../variables" as *;
+
+.ordersTable {
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+    --header-text: #{$neutral-500};
+    --row-text: #{$neutral-800};
+    --row-hover: #{$surface-muted};
+
+    [data-theme='dark'] & {
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+        --header-text: #{$neutral-400};
+        --row-text: #{$neutral-100};
+        --row-hover: #{$dark-surface-hover};
+    }
+
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    overflow: hidden;
+    font-size: $font-size-sm;
+
+    thead th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: $font-size-xs;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-weight: $font-weight-semibold;
+        color: var(--header-text);
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody td {
+        padding: 14px 16px;
+        color: var(--row-text);
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    tbody tr:hover td {
+        background-color: var(--row-hover);
+    }
+}

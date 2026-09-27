@@ -5,12 +5,14 @@ import axios from "axios";
 
 interface AuthState {
     token: string | null;
+    email: string | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: AuthState = {
     token: localStorage.getItem("token"),
+    email: localStorage.getItem("email"),
     loading: false,
     error: null
 }
@@ -48,7 +50,9 @@ const authSlice = createSlice({
     reducers:{
         logout: (state) => {
             state.token = null;
-            localStorage.removeItem("token")
+            state.email = null;
+            localStorage.removeItem("token");
+            localStorage.removeItem("email");
         }
     },
     extraReducers: (builder) => {
@@ -60,7 +64,9 @@ const authSlice = createSlice({
             .addCase(loginThunk.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload;
+                state.email = action.meta.arg.email;
                 localStorage.setItem("token",action.payload);
+                localStorage.setItem("email",action.meta.arg.email);
             })
             .addCase(loginThunk.rejected, (state, action) => {
                 state.loading = false;

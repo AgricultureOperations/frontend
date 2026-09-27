@@ -1,0 +1,101 @@
+@use "../../variables" as *;
+
+.sidebar {
+    // Reference (dev-admisiones-online.ecotec.edu.ec/dashboard): sidebar is a white
+    // surface in light mode, not a permanently dark one - it only goes dark under
+    // [data-theme='dark']. Active item is a tinted primary pill (not a solid fill),
+    // with the icon+label staying brand-blue rather than flipping to white.
+    --sidebar-bg: #{$neutral-100};
+    --sidebar-border: #{$neutral-200};
+    --sidebar-text: #{$neutral-400};
+    --sidebar-hover-bg: #{rgba($neutral-400, 0.1)};
+    --sidebar-active-bg: #{rgba($primary-700, 0.1)};
+    --sidebar-active-text: #{$primary-700};
+
+    [data-theme='dark'] & {
+        --sidebar-bg: #{$dark-shell-surface};
+        --sidebar-border: #{$dark-border};
+        --sidebar-text: #{$neutral-400};
+        --sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+        --sidebar-active-bg: #{rgba($primary-700, 0.2)};
+        --sidebar-active-text: #{$primary-700};
+    }
+
+    // Measured on the reference (dev-admisiones-online.ecotec.edu.ec/dashboard/solicitudes/)
+    // via Playwright DOM evaluation: <aside> is 80px wide with no horizontal padding of
+    // its own, header is 64px tall, and each nav <a> sits centered in a ~56-64px column.
+    width: 80px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $gap-lg 6px;
+    box-sizing: border-box;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+}
+
+.navList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 2px;
+    border-radius: $radius-md;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: $transition;
+
+    &:hover {
+        background-color: var(--sidebar-hover-bg);
+    }
+}
+
+.navItemActive {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+
+    &:hover {
+        background-color: var(--sidebar-active-bg);
+    }
+}
+
+.navIcon {
+    display: flex;
+    font-size: 20px;
+}
+
+.navLabel {
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: $font-weight-medium;
+    text-align: center;
+}
+
+.settingsButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 2px;
+    font-family: inherit;
+    color: var(--sidebar-text);
+    background: none;
+    border: none;
+    border-radius: $radius-md;
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    svg {
+        font-size: 20px;
+    }
+}

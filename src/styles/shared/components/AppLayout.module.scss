@@ -1,0 +1,38 @@
+@use "../../variables" as *;
+
+// Full-viewport shell: escapes #root's max-width/padding from App.css, same trick as LoginPage.
+.layout {
+    // Reference (dev-admisiones-online.ecotec.edu.ec/dashboard): main content sits on
+    // #f5f7fa in light and #0a0a14 in dark - both distinct from the sidebar/header surface.
+    --main-bg: #{$surface-page};
+
+    &[data-theme='dark'] {
+        --main-bg: #{$dark-shell-bg};
+    }
+
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--main-bg);
+    font-family: $font-family-base;
+}
+
+.body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    background-color: var(--main-bg);
+    padding: $gap-xl;
+    box-sizing: border-box;
+    // App.css's #root sets text-align: center; .layout only escapes its max-width/padding
+    // via position:fixed, which doesn't break inheritance, so every page title/paragraph
+    // in here was still inheriting centered text. Reset it once, at the root of the shell.
+    text-align: left;
+}

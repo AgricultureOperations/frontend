@@ -1,0 +1,136 @@
+@use "../../variables" as *;
+
+.header {
+    // Reads the .layout[data-theme] custom properties defined on the ancestor,
+    // so light/dark stays in sync with the rest of the shell without its own selector.
+    // Translucent + blurred surface, matching the reference header (bg-white/80,
+    // dark:bg-[#0d0d14]/80, backdrop-blur-xl).
+    --header-bg: #{rgba($neutral-100, 0.8)};
+    --header-border: #{$neutral-200};
+    --title: #{$neutral-800};
+    --icon: #{$neutral-500};
+    --icon-hover: #{$neutral-800};
+    --avatar-bg: #{$primary-700};
+    --avatar-text: #{$neutral-100};
+
+    [data-theme='dark'] & {
+        --header-bg: #{$dark-card};
+        --header-border: #{$dark-border};
+        --title: #{$neutral-100};
+        --icon: #{$neutral-400};
+        --icon-hover: #{$neutral-100};
+        --avatar-bg: #{$primary-600};
+        --avatar-text: #{$neutral-100};
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 $gap-lg;
+    box-sizing: border-box;
+    background-color: var(--header-bg);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--header-border);
+    flex-shrink: 0;
+    gap: $gap-base;
+
+    @media (max-width: $bp-tablet) {
+        padding: 0 $gap-base;
+    }
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.logo {
+    height: 28px;
+    width: auto;
+}
+
+.title {
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    @media (max-width: $bp-tablet) {
+        gap: 4px;
+    }
+}
+
+.iconButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    font-size: 20px;
+    color: var(--icon);
+    background: none;
+    border: none;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+        color: var(--icon-hover);
+    }
+}
+
+.badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $status-critical;
+    border: 1.5px solid var(--header-bg);
+}
+
+.userBadge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 4px;
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: var(--avatar-text);
+    background-color: var(--avatar-bg);
+}
+
+.userName {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: var(--title);
+    white-space: nowrap;
+
+    // Below tablet width the toolbar has no room for the full name; the avatar's
+    // initials remain, so identity is still visible without wrapping or overflow.
+    @media (max-width: $bp-tablet) {
+        display: none;
+    }
+}
