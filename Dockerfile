@@ -22,26 +22,25 @@ RUN npm run build
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Create a non-root user
-RUN addgroup -S appuser && adduser -S appuser -G appuser
-
 # Remove default config
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy custom config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy React build
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html
 
-# Give ownership to non-root user
-RUN chown -R appuser:appuser /usr/share/nginx/html
+# Let the image's non-root nginx user write its cache, logs, config and pid file
+RUN chown -R nginx:nginx /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
 
 # Switch to non-root user
-USER appuser
+USER nginx
 
-# Expose port
-EXPOSE 80
+# Unprivileged port (nginx.conf listens here)
+EXPOSE 8080
 
-# Start nginx
+# Start nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]

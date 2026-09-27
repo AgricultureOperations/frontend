@@ -1,4 +1,5 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import styles from "../../../styles/features/orders/pages/OrdersPage.module.scss";
 import { Order } from "../interfaces/order.interface";
 interface Props {
     data: Order[]
@@ -29,7 +30,7 @@ export const OrdersTable = ({ data }:Props) => {
         getCoreRowModel: getCoreRowModel()
     });
     return (
-        <table>
+        <table className={styles.ordersTable}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
