@@ -1,0 +1,247 @@
+@use "../../../variables" as *;
+
+// Full-viewport page: escapes #root's max-width/padding from App.css
+.container {
+    // Theme colors. Light values come from the SCSS tokens; dark overrides below.
+    --page-gradient: linear-gradient(to right bottom, #{rgba($primary-700, 0.1)}, #{$neutral-100}, #{$primary-50});
+    --page-bg: #{$neutral-100};
+    --card-bg: #{$neutral-100};
+    --card-blur: none;
+    --border: #{$neutral-200};
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --label: #{$neutral-700};
+    --input-bg: #{$surface-muted};
+    --input-text: #{$neutral-800};
+    --placeholder: #{$neutral-400};
+    --icon: #{$neutral-400};
+    --icon-hover: #{$neutral-500};
+    --link: #{$primary-700};
+    --toggle-bg: transparent;
+    --toggle-color: #{$neutral-500};
+
+    &[data-theme='dark'] {
+        --page-gradient: linear-gradient(to right bottom, #{$dark-page-edge}, #{$dark-page-mid}, #{$dark-page-edge});
+        --page-bg: #{$dark-page-mid};
+        --card-bg: #{$dark-card};
+        --card-blur: blur(24px);
+        --border: #{$dark-border};
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --label: #{$dark-text-label};
+        --input-bg: #{$dark-surface};
+        --input-text: #{$neutral-100};
+        --placeholder: #{$neutral-500};
+        --icon: #{$neutral-400};
+        --icon-hover: #{$dark-text-label};
+        --link: #{$dark-link};
+        --toggle-bg: #{$dark-surface-hover};
+        --toggle-color: #{$neutral-200};
+    }
+
+    position: fixed;
+    inset: 0;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    // opaque base so the global dark body doesn't bleed through translucent gradient stops
+    background-color: var(--page-bg);
+    background-image: var(--page-gradient);
+    font-family: $font-family-base;
+    text-align: start;
+}
+
+.card {
+    width: 100%;
+    max-width: 448px;
+    padding: $padding-card;
+    box-sizing: border-box;
+    position: relative;
+    background-color: var(--card-bg);
+    backdrop-filter: var(--card-blur);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xl;
+}
+
+.themeToggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 20px;
+    color: var(--toggle-color);
+    background-color: var(--toggle-bg);
+    border: none;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+        color: var(--title);
+    }
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.logo {
+    height: 38px;
+    width: auto;
+    margin-bottom: 16px;
+}
+
+.title {
+    margin: 0;
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+}
+
+// overrides the global centered 0.75rem <p>
+.subtitle {
+    width: 100%;
+    margin: 4px 0 0;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    color: var(--muted);
+    text-align: start;
+}
+
+.link {
+    color: var(--link);
+    font-weight: $font-weight-semibold;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-md;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    font-weight: $font-weight-medium;
+    color: var(--label);
+}
+
+.input {
+    width: 100%;
+    height: $control-height;
+    padding: $padding-input;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--input-text);
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-md;
+    outline: none;
+    transition: $transition;
+
+    &::placeholder {
+        color: var(--placeholder);
+    }
+
+    &:focus {
+        border-color: $primary-700;
+        box-shadow: 0 0 0 3px rgba($primary-700, 0.15);
+    }
+}
+
+.passwordInputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input {
+        padding-right: 48px;
+    }
+}
+
+.passwordToogleIcon {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    font-size: 20px;
+    color: var(--icon);
+    cursor: pointer;
+
+    &:hover {
+        color: var(--icon-hover);
+    }
+}
+
+.error {
+    margin: 6px 0 0;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: $error-500;
+    text-align: start;
+
+    &:empty {
+        display: none;
+    }
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: $button-height;
+    padding: $padding-button;
+    font-family: inherit;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    font-weight: $font-weight-semibold;
+    color: $neutral-100;
+    background-color: $primary-700;
+    border: none;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    svg {
+        font-size: 20px;
+    }
+
+    &:hover:not(:disabled) {
+        opacity: 0.9;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}

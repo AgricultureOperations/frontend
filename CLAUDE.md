@@ -22,6 +22,8 @@ npm run preview        # serve the built dist/
 npm run lint           # ESLint, --max-warnings 0 (any warning fails)
 npm test               # Vitest (watch locally; single run in CI)
 npm run test:only      # Vitest single run
+npm run test:e2e       # Playwright visual regression (tests/), see tests/README.md
+npm run test:e2e:update # regenerate the screenshot baselines after an intended design change
 npm run test:ui        # Vitest UI
 npm run coverage       # coverage report → coverage/
 npx vitest run test/api/bitacora.api.spec.ts   # single file

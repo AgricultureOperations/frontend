@@ -40,17 +40,65 @@ Shade	Meaning
 800	Very dark
 900	Extremely dark
 */
+$primary-50: #eff6ff; // ECOTEC login: page gradient end
 $primary-500: #1d4ed8;
 $primary-600: #2563eb;
+$primary-700: #3456a3; // ECOTEC login: primary button bg, link text
 $neutral-900: #07080a;
 $neutral-700: #1c1d21;
 $neutral-100: #ffffff;
 $neutral-300: #cbd5e1;
 $neutral-600: #7d7e80;
-$neutral-800: #111827;
+$neutral-800: #111827; // ECOTEC login: body/heading text
+$neutral-200: #e5e7eb; // ECOTEC login: input/card borders
+$neutral-400: #9ca3af; // ECOTEC login: placeholder, icon buttons
+$neutral-500: #6b7280; // ECOTEC login: secondary text, subtitles
 $error-500: #ef4444;
 
+/*surfaces (backgrounds that sit between neutral-100 white and borders)*/
+$surface-page: #f5f7fa;
+$surface-muted: #f9fafb; // input background
+
+/*dark theme (ECOTEC login, dark mode)*/
+$dark-page-edge: #1a0a2e; // gradient start and end
+$dark-page-mid: #0d0d0d;  // gradient middle
+$dark-card: rgba(13, 13, 20, 0.8);
+$dark-border: rgba(255, 255, 255, 0.08);
+$dark-surface: rgba(255, 255, 255, 0.03); // input background
+$dark-surface-hover: rgba(255, 255, 255, 0.05); // theme toggle background
+$dark-text-label: #d1d5db;
+$dark-link: #8ea4d8;
+
+/*typography*/
+$font-family-base: 'Poppins', sans-serif;
+$font-size-xs: 12px;   // line-height 16px
+$font-size-sm: 14px;   // line-height 20px (labels, inputs)
+$font-size-base: 16px; // line-height 24px (body, buttons)
+$font-size-2xl: 24px;  // line-height 32px (page title)
+$line-height-xs: 16px;
+$line-height-sm: 20px;
+$line-height-base: 24px;
+$line-height-2xl: 32px;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
 $border-radius: 6px;
+$radius-sm: 8px;  // text buttons / links
+$radius-md: 12px; // inputs, primary buttons
+$radius-lg: 16px; // cards
+
+/*shadows*/
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+/*padding inside components*/
+$padding-card: 32px;
+$padding-input: 12px 16px;
+$padding-button: 0 24px;
+$control-height: 46px; // inputs
+$button-height: 48px;
 $transition: all 0.2s ease;
 
 /*spacing between items inside the container*/

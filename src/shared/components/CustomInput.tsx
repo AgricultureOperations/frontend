@@ -11,6 +11,8 @@ interface Props {
     HandleChange: (e: any) => void;
     validationError?: string;
     isRequired: boolean;
+    label?: string;
+    classNameLabel?: string;
 
     //password-specific
     isPasswordType?: boolean;
@@ -19,12 +21,18 @@ interface Props {
     HandlePasswordType?: () => void;
 
 }
-const CustomInput = ({classNameFormGroup,classNameInput,classNameError,name,type,placeholder,value,HandleChange,isRequired = false,validationError, isPasswordType = false,passwordType,classNamePasswordToogleIcon,HandlePasswordType}:Props) => {
+const CustomInput = ({classNameFormGroup,classNameInput,classNameError,name,type,placeholder,value,HandleChange,isRequired = false,validationError,label,classNameLabel, isPasswordType = false,passwordType,classNamePasswordToogleIcon,HandlePasswordType}:Props) => {
+  const labelElement = label && (
+    <label htmlFor={name} className={classNameLabel}>{label}</label>
+  );
   return (
     <>
+        {isPasswordType && labelElement}
         <div className={classNameFormGroup}>
+            {!isPasswordType && labelElement}
             <input
                 className={classNameInput}
+                id={label ? name : undefined}
                 name={name}
                 type={isPasswordType ? passwordType : type}
                 placeholder={placeholder}

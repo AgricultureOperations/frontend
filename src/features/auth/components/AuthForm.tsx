@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import CustomInput from "../../../shared/components/CustomInput";
 import Spinner from "../../../shared/components/Spinner";
 interface inputField {
@@ -8,6 +9,7 @@ interface inputField {
     HandleChange: (e: any) => void;
     validationError?: string;
     isRequired: boolean;
+    label?: string;
 
     //password-specific
     isPasswordType?: boolean;
@@ -25,11 +27,13 @@ interface Props {
     classNameButton: string;
     loading: boolean;
     buttonName: string;
+    buttonIcon?: ReactNode;
+    classNameLabel?: string;
     //fields
     fields: inputField[]
 
 }
-const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputContainer, HandleLogin, classNameInput, classNameError, fields, classNameButton, loading, buttonName}:Props) => {
+const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputContainer, HandleLogin, classNameInput, classNameError, fields, classNameButton, loading, buttonName, buttonIcon, classNameLabel}:Props) => {
   return (
     <form className={classNameForm}
         onSubmit={(e) => {
@@ -49,6 +53,8 @@ const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCont
                 HandleChange={field.HandleChange}
                 isRequired={field.isRequired}
                 validationError={field.validationError}
+                label={field.label}
+                classNameLabel={classNameLabel}
             />) || 
             field.isPasswordType && (
             <div className={classNameFormGroup}>
@@ -63,6 +69,8 @@ const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCont
                     HandleChange={field.HandleChange}
                     isRequired={field.isRequired}
                     validationError={field.validationError}
+                    label={field.label}
+                    classNameLabel={classNameLabel}
                     isPasswordType={field.isPasswordType}
                     passwordType={field.passwordType}
                     classNamePasswordToogleIcon={field.classNamePasswordToogleIcon}
@@ -71,7 +79,7 @@ const AuthForm = ({classNameForm, classNameFormGroup, classNamePasswordInputCont
             </div>)
         )}
         <button type="submit" className={classNameButton} disabled={loading} onClick={HandleLogin}>
-            {loading ? <Spinner />: buttonName}
+            {loading ? <Spinner />: <>{buttonIcon}{buttonName}</>}
         </button>
     </form>
   )

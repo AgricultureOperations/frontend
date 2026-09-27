@@ -65,3 +65,9 @@ coverage/
 .tmp/
 .temp/
 .cache/
+
+# =========================
+# Playwright
+# =========================
+test-results/
+playwright-report/
