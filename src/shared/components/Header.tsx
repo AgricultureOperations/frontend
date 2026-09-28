@@ -4,7 +4,6 @@ import styles from "../../styles/shared/components/Header.module.scss";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { logout } from "../../features/auth/states/auth.slice";
 import { getDisplayNameFromEmail, getInitials } from "../utils/formatUserDisplay";
-import plantIcon from "../../assets/plant-logo.png";
 import type { Theme } from "../hooks/useTheme";
 
 interface Props {
@@ -27,10 +26,7 @@ export const Header = ({ theme, toggleTheme }: Props) => {
 
     return (
         <header className={styles.header}>
-            <div className={styles.brand}>
-                <img src={plantIcon} alt="" className={styles.logo} />
-                <span className={styles.title}>AgriOPS</span>
-            </div>
+            <span className={styles.title}>AgriOPS</span>
             <div className={styles.actions}>
                 <button
                     type="button"

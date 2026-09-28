@@ -9,9 +9,9 @@ export const AppLayout = () => {
 
     return (
         <div className={styles.layout} data-theme={theme}>
-            <Header theme={theme} toggleTheme={toggleTheme} />
-            <div className={styles.body}>
-                <Sidebar />
+            <Sidebar />
+            <div className={styles.column}>
+                <Header theme={theme} toggleTheme={toggleTheme} />
                 <main className={styles.content}>
                     <Outlet />
                 </main>

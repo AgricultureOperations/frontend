@@ -13,6 +13,7 @@ import { expect, test } from './fixtures/auth';
 const routes = [
   { path: '/dashboard', slug: 'dashboard', readyHeading: /Hola,/ },
   { path: '/orders', slug: 'orders', readyHeading: /Orders/ },
+  { path: '/maintainers', slug: 'maintainers', readyHeading: /Maintainers/ },
 ];
 
 const viewports = [

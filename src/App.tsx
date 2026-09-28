@@ -5,6 +5,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { UsersPage } from './features/users';
 import { DashboardPage } from './features/dashboard';
 import { OrdersPage } from './features/orders';
+import { MaintainersPage } from './features/maintainers';
 import { AppLayout } from './shared/components/AppLayout';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/users' element={<UsersPage />} />
           <Route path='/orders' element={<OrdersPage />} />
+          <Route path='/maintainers' element={<MaintainersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

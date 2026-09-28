@@ -27,7 +27,7 @@
     align-items: center;
     justify-content: space-between;
     height: 64px;
-    padding: 0 $gap-lg;
+    padding: 0 24px;
     box-sizing: border-box;
     background-color: var(--header-bg);
     backdrop-filter: blur(24px);
@@ -40,23 +40,12 @@
     }
 }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.logo {
-    height: 28px;
-    width: auto;
-}
-
 .title {
-    font-size: $font-size-2xl;
-    line-height: $line-height-2xl;
-    font-weight: $font-weight-bold;
+    font-size: $font-size-xl;
+    line-height: $line-height-xl;
+    font-weight: $font-weight-medium;
     color: var(--title);
+    min-width: 0;
 }
 
 .actions {

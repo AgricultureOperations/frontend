@@ -53,20 +53,45 @@ New domains should copy this shape and register their slice in `src/store/store.
 
 ## UI & Layout Guidelines
 
-The authenticated app shell follows the Admisiones Online back-office pattern. Every protected route renders inside `AppLayout` (`src/shared/components/AppLayout.tsx`): `Header` on top, `Sidebar` on the left, and the page in `<main>` through `<Outlet />`. New protected pages go under that layout route in `App.tsx`. Don't give a page its own header or nav.
+The authenticated app shell follows the Admisiones Online back-office pattern. Every protected route renders inside `AppLayout` (`src/shared/components/AppLayout.tsx`). Don't give a page its own header or nav. New protected pages go under that layout route in `App.tsx`.
+
+### Layout hierarchy
+```
+.layout      fixed, inset 0, flex ROW, overflow hidden, data-theme="light|dark"
+├─ <aside> Sidebar     80px wide, height 100% (top of the window to the bottom), border-right
+│   ├─ .top
+│   │   ├─ .brand      64px tall (same as Header), leaf icon, border-bottom
+│   │   └─ <nav>       Inicio, Orders, Users
+│   └─ <nav> .bottom   Maintainers, pinned to the bottom
+└─ .column             flex 1, flex COLUMN, overflow hidden
+    ├─ <header> Header 64px tall, border-bottom, 24px side padding
+    └─ <main>          flex 1, overflow-y auto, 40px padding, <Outlet />
+```
+- The sidebar is a sibling of the header, not a child of a row below it. Its right border therefore reaches the top edge of the window, and the header's left edge touches it. Don't move the sidebar back under the header.
+- `Sidebar.brand` and `Header` must stay the same height (64px, `box-sizing: border-box`) so their bottom borders form one line.
+- `tests/app-layout.spec.ts` asserts this geometry (sidebar `x=0, y=0, height=viewport`, header `x = sidebar width`), so a change here fails a test on purpose.
 
 ### Header (`Header.tsx`)
-- **Left:** logo (`assets/plant-logo.png`) and the app title `AgriOPS`.
+- **Left:** the app title `AgriOPS` only (`font-medium`, 20px). The logo lives at the top of the Sidebar, not here.
 - **Right, in this order:** theme toggle (Dark/Light), notifications bell, user badge (initials avatar + uppercase name), logout button.
 - The user name is **derived from `auth.email`** by `getDisplayNameFromEmail` (for example `edward.cruz@…` → `EDWARD CRUZ`). Never hardcode it. auth-service issues no name field, and the JWT must not be decoded for UI info (see `architecture.md`).
 - Icon-only buttons need an `aria-label`. The labels are `Switch to dark mode` / `Switch to light mode`, `Notifications` and `Log out`. The Playwright specs find the toggle and logout buttons by these names, so renaming one breaks the tests.
 - The notifications bell is visual only, with no backend or handler yet.
 
 ### Sidebar (`Sidebar.tsx`)
+- The brand icon (`assets/plant-icon.png`, cropped square) sits in the 64px `.brand` cell above the first item. The favicon is `public/favicon.png`.
 - Vertical icon + label list built from the `navItems` array with `NavLink`. The active item is a tinted primary pill (`navItemActive`), not a solid fill.
-- Current routes: `Inicio` → `/dashboard`, `Orders` → `/orders` (replaces the reference design's "Solicitudes"; there is no `/solicitudes` route), `Users` → `/users`.
-- Pinned to the bottom: a disabled `Settings (coming soon)` button. This is the slot for **`Maintainers` → `/maintainers`** (master data and system settings). That route and page **do not exist yet**. When you build it, replace the disabled button with a `NavLink` to `/maintainers`, keep it at the bottom, and add the route under `AppLayout`.
-- Nav labels use English resource names (`Orders`, `Maintainers`, `Users`). The exception is `Inicio`.
+- Route mapping:
+
+  | Label | Route | Position | Notes |
+  |---|---|---|---|
+  | `Inicio` | `/dashboard` | top | KPIs |
+  | `Orders` | `/orders` | top | replaces the reference design's "Solicitudes"; there is no `/solicitudes` route |
+  | `Users` | `/users` | top | |
+  | `Maintainers` | `/maintainers` | pinned to the bottom | master data and system settings. The page is a placeholder `EmptyState` for now |
+
+- Nav labels use English resource names. The exception is `Inicio`.
+- A new maintained entity goes into the `Maintainers` page, not into a new top-level sidebar item.
 
 ### Pages
 - **Dashboard:** greeting header `Hola, {USER_NAME}` (display name, uppercased) with the subtitle `Panel de control AgriOPS`, followed by a row of `StatCard`s.
@@ -80,8 +105,9 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
 - Each component module declares CSS custom properties for light mode and overrides them under `[data-theme='dark'] & { … }`. Rules then use only `var(--…)`. Follow this pattern for every new component so both themes work without duplicate rules.
 
 ### Testing
+- `app-layout.spec.ts` covers the shell's geometry (full-height sidebar, header against it), the brand placement, sidebar links and routing (`/orders`, `/maintainers`), and the `data-theme` toggle.
 - Playwright E2E tests live in `tests/`, separate from the Vitest specs in `test/`. Read `tests/README.md` before changing them.
-- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard` and `/orders` in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders` and `/maintainers` in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
 - A new shell route needs light and dark baselines in the visual spec plus a sidebar-routing assertion in `app-layout.spec.ts`.
 - After an intended style or token change, check the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.
 

@@ -12,20 +12,25 @@
 
     position: fixed;
     inset: 0;
+    // Row: full-height sidebar on the left, header + content stacked on the right.
     display: flex;
-    flex-direction: column;
+    overflow: hidden;
     background-color: var(--main-bg);
     font-family: $font-family-base;
 }
 
-.body {
+.column {
     flex: 1;
     display: flex;
-    min-height: 0;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
 }
 
 .content {
     flex: 1;
+    min-height: 0;
     min-width: 0;
     overflow-y: auto;
     background-color: var(--main-bg);
