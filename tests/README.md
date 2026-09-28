@@ -7,7 +7,7 @@
 | `login-light-desktop.png`, `login-light-mobile.png` | default (light) |
 | `login-dark-desktop.png`, `login-dark-mobile.png` | after clicking "Switch to dark mode" |
 
-`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…` and `maintainers-…` likewise.
+`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders`, `/users` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…` and `users-…` and `maintainers-…` likewise.
 
 Both specs fake a signed-in session instead of exercising the real login form: `tests/fixtures/auth.ts` seeds `localStorage.token`/`localStorage.email` before each test (this is enough for `ProtectedRoute`, which only checks that a token string exists - see `architecture.md`) and stubs every `/api/v1/**` call to `200 []`, so a real backend can't 401 the fake token and bounce the test to `/login` via the app's 401 interceptor.
 

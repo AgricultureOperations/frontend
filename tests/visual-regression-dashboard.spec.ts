@@ -14,6 +14,7 @@ const routes = [
   { path: '/dashboard', slug: 'dashboard', readyHeading: /Hola,/ },
   { path: '/orders', slug: 'orders', readyHeading: /Orders/ },
   { path: '/maintainers', slug: 'maintainers', readyHeading: /Maintainers/ },
+  { path: '/users', slug: 'users', readyHeading: /Users/ },
 ];
 
 const viewports = [

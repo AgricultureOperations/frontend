@@ -1,0 +1,49 @@
+@use "../../../variables" as *;
+
+.page {
+    --title: #{$neutral-800};
+    --subtitle: #{$neutral-500};
+
+    [data-theme='dark'] & {
+        --title: #{$neutral-100};
+        --subtitle: #{$neutral-400};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: $gap-lg;
+    text-align: left;
+}
+
+.titleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title {
+    margin: 0;
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+}
+
+// Reference: 14px, #6B7280 (= $neutral-500), 4px below the title.
+// text-align is explicit because global.scss's `p { text-align: center }` rule
+// targets this <p> tag directly, which wins over the .page ancestor's alignment.
+.subtitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--subtitle);
+    text-align: left;
+}
+
+// The list has no component styles of its own; without this it inherits body's `color: #fff`
+// and is unreadable on the light shell.
+.page ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--title);
+}

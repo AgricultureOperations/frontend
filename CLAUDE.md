@@ -107,7 +107,7 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
 ### Testing
 - `app-layout.spec.ts` covers the shell's geometry (full-height sidebar, header against it), the brand placement, sidebar links and routing (`/orders`, `/maintainers`), and the `data-theme` toggle.
 - Playwright E2E tests live in `tests/`, separate from the Vitest specs in `test/`. Read `tests/README.md` before changing them.
-- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders` and `/maintainers` in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users` and `/maintainers` in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
 - A new shell route needs light and dark baselines in the visual spec plus a sidebar-routing assertion in `app-layout.spec.ts`.
 - After an intended style or token change, check the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.
 
