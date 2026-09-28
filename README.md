@@ -1,44 +1,92 @@
 # 🌱 AgriOps Web
 🌐 **Live Demo:** https://agricultureops.netlify.app
 
-<p>
-Frontend client application for the AgriOps platform, built with <strong>React</strong>, <strong>Vite</strong>, and <strong>TypeScript</strong>.
+AgriOps Web is the back-office single-page app of the **AgricultureOperations (AgriOps)** platform. It is the single UI for every AgriOps backend. It handles login and registration against **auth-service** and shows orders from **order-service**, all inside one authenticated app shell with light and dark themes.
 
-AgriOps Web integrates with the AgriOps Backend API to provide authentication, protected routes, and agricultural operations management features.
+It is built with **React 18**, **TypeScript** (strict) and **Vite**, uses **Redux Toolkit** for server state, and follows a **feature-first, domain-driven architecture** with a clean split between UI, business logic and API layers.
 
-This project follows a scalable, domain-driven architecture with clean separation between UI, business logic, and API layers, now including <strong>Redux Toolkit</strong> for global state management.
-</p>
+---
+
+## 🌐 Place in the AgriOps Platform
+
+AgriOps is made of three independent services, each in its own repository with its own CI/CD:
+
+| Service | Stack | Role |
+|---|---|---|
+| [auth-service](https://github.com/AgricultureOperations/auth-service) | Express 5 + TypeScript + SQLite | Users, login, JWT issuance |
+| [order-service](https://github.com/AgricultureOperations/order-service) | ASP.NET Core (.NET 9) + PostgreSQL | JWT-protected order CRUD |
+| **agriops-web** (this repo) | React 18 + Vite | Back-office SPA for both backends |
+
+```
+frontend ──(login/register, users)──▶ auth-service   ──issues JWT──┐
+    │                                                              │ shared secret/issuer/audience
+    └──(Bearer JWT, orders)──────────▶ order-service ◀─validates───┘
+```
+
+- The browser calls each backend directly over REST. The backends never call each other, and there is no API gateway.
+- Each backend has its **own axios instance**: `bitacoraApi` → auth-service and `orderApi` → order-service. Base URLs are host only. Endpoint paths include `/api/v1/...`.
+- The JWT from auth-service is sent as `Authorization: Bearer <token>` to both backends. No cookies are used.
 
 ---
 
 ## 🚀 Features
 
-- User authentication (Login & Register)
-- Table built with TanStack Table
-- Protected routes with token-based access control
-- **Redux Toolkit** state management for auth and registration
-- Typed Redux hooks (`useAppDispatch`, `useAppSelector`) for type-safe state access
-- API abstraction layer for backend communication
-- Custom React hooks for business logic encapsulation
-- Domain-based folder structure (feature-first architecture)
-- Modular CSS styling
-- Fast development with Vite
-- Environment-based configuration
-- Reusable shared components (Spinner, Error handling, etc.)
+- Login and registration with Yup-validated forms
+- JWT session kept in `localStorage`, attached to every request by an axios interceptor
+- Automatic logout and redirect to `/login` on any 401 (except the login call itself)
+- Protected routes rendered inside one shared app shell (`AppLayout`: sidebar + header)
+- Dashboard with order KPIs (total, pending, delivered, cancelled) from order-service
+- Orders table (TanStack Table) with status badges and an empty state
+- Users list with client-side search
+- Maintainers page (placeholder for master data and system settings)
+- Light / dark theme toggle
+- Vitest unit tests and Playwright visual regression tests (light + dark, desktop + mobile)
 
 ---
 
 ## 🛠 Tech Stack
 
-- React 18
-- TypeScript (strict mode)
-- Vite
+- React 18, TypeScript (strict), Vite 4
+- Redux Toolkit + React Redux
+- React Router 7
 - Axios
-- Redux Toolkit
-- React Router
-- ESLint
 - Yup
 - TanStack Table
+- SCSS modules (`sass`), `react-icons`, self-hosted Poppins (`@fontsource/poppins`)
+- Vitest + jsdom, Playwright
+- ESLint
+- Netlify (hosting), GitHub Actions (CI/CD), Docker + nginx (local container)
+
+---
+
+## 🧱 Architecture
+
+Dependencies go in one direction only:
+
+```
+UI (pages/components) → hooks (business logic) → Redux slices/thunks (state) → API functions → axios instances
+```
+
+| Layer | Rules |
+|---|---|
+| Pages / components | Present data only. Never call APIs or axios. |
+| Hooks | Form state, Yup validation, dispatching and navigation. |
+| Slices / thunks | State shaped `{ <data>, loading, error: string \| null }`, filled by `createAsyncThunk`. Axios errors map to `rejectWithValue(response.data.message \|\| "Something went wrong")`. Slices never navigate. |
+| API functions | Thin typed wrappers around an axios instance that return `response.data`. |
+
+### State management
+
+- Server data lives in Redux slices registered in `src/store/store.ts` (`auth`, `register`, `orders`). Components use the typed `useAppDispatch` / `useAppSelector` only. Don't add React Query, Context stores or component-level fetching next to Redux.
+- `localStorage.token` is the source of truth for the session. The axios interceptor and `ProtectedRoute` read it, and `auth.token` in Redux mirrors it. Login stores the token and the email. Logout clears both.
+- Form and filter state stays local in hooks, never in Redux.
+- The theme lives in component state (`useTheme`) and is **not persisted**, because `localStorage` is reserved for the session.
+
+### Boundaries with the backends
+
+- `ProtectedRoute` only checks that a token string exists. It is navigation UX, not security. Every protected resource is protected by its backend.
+- The JWT is never decoded client-side. The user's display name is derived from `auth.email` by `getDisplayNameFromEmail`.
+- `VITE_*` values are public and end up in the JS bundle. Only put public base URLs there, never secrets.
+- Backend response types are hand-written mirrors in `src/features/<domain>/interfaces/`. When a backend DTO or response shape changes, update the mirror in the same change set.
 
 ---
 
@@ -46,210 +94,210 @@ This project follows a scalable, domain-driven architecture with clean separatio
 
 ```bash
 src/
- ├── api/                     # Axios configuration & API base setup
- │
+ ├── api/                     # createAxiosApi factory + bitacoraApi (auth-service), orderApi (order-service)
  ├── features/
- │    ├── auth/
- │    │    ├── apis/       # API calls (login, register)
- │    │    ├── hooks/         # useLogin, useRegister
- │    │    ├── interfaces/    # Response & request types
- │    │    ├── pages/         # LoginPage, RegisterPage
- │    │    ├── states/         # Redux slice(s) for auth   
- │    │    └── validations/   # Form validation schemas
- │    │
- │    ├── dashboard/          # Dashboard domain logic
- │    │    ├── components/    
- │    │    ├── interfaces/    
- │    │    ├── pages/         # DashboardPage
- │    │    └── validations/   # Form validation schemas
- │    │
- │    ├── orders/             # Orders-related domain logic   
- │    │    ├── components/    # OrdersTable
- │    │    ├── data/          # dataMock
- │    │    ├── hooks/         # useOrdersTable
- │    │    ├── interfaces/    # interfaces
- │    │    └── pages/         # OrdersPage
- │    │
- │    └── users/              # User-related domain logic
- │         ├── actions/       # API calls (fetch-users)
- │         ├── components/    # UserList
- │         ├── hooks/         # useApp, useUsers
- │         ├── interfaces/    # Interface & Response
- │         ├── pages/         # UsersPage
- │         └── validations/   # Form validation schemas
- ├── routes/
- │    └── ProtectedRoute.tsx  # Route guard component
- │
- ├── shared/components/       # Reusable UI components
- │    ├── Spinner.tsx
- │    ├── SharedError.tsx
- │    └── CustomHeader.tsx
- │
- ├── store/                   # Root store configuration
- │    ├── store.ts            # Redux store combining all slices
- │    └── hooks.ts            # useAppDispatch & useAppSelector
- │
- ├── App.tsx
- ├── main.tsx
- └── index.css
+ │    ├── auth/               # Login & Register: apis, hooks, interfaces, pages, states (auth + register slices), validations
+ │    ├── dashboard/          # DashboardPage + StatCard (KPIs built from the orders slice)
+ │    ├── orders/             # get-orders API, order slice, useOrdersTable, OrdersTable, OrderStatusBadge, OrdersPage
+ │    ├── users/              # fetch-users API, useUser/useApp hooks, UserList, UsersPage
+ │    └── maintainers/        # MaintainersPage (placeholder)
+ ├── routes/ProtectedRoute.tsx
+ ├── shared/
+ │    ├── components/         # AppLayout, Header, Sidebar, EmptyState, Spinner, SharedError, CustomInput, SearchBar
+ │    ├── hooks/useTheme.ts
+ │    └── utils/formatUserDisplay.ts
+ ├── store/                   # store.ts (registers every slice), hooks.ts (typed hooks)
+ ├── styles/                  # _variables.scss (tokens), _mixins.scss, globals,
+ │                            # features/<domain>/... and shared/... CSS modules mirroring the component paths
+ ├── App.tsx                  # Route table
+ └── main.tsx
+
+test/                         # Vitest specs, mirroring src/ (e.g. test/api/)
+tests/                        # Playwright specs, fixtures and screenshot baselines (see tests/README.md)
 ```
+
+Each feature exposes only its pages from `index.ts`. A new domain copies this shape, gets its own API instance if it talks to a new backend, and registers its slice in `src/store/store.ts`. CSS modules live in `src/styles/features/<domain>/...`, not next to the component.
 
 ---
 
-## 🔗 Backend Integration
+## 🗺 Routes & App Shell
 
-AgriOps Web connects to:
+| Route | Page | Access | Sidebar |
+|---|---|---|---|
+| `/` | redirects to `/login` | public | — |
+| `/login` | LoginPage (redirects to `/orders` after login) | public | — |
+| `/register` | RegisterPage (redirects to `/login` on success) | public | — |
+| `/dashboard` | DashboardPage: `Hola, {NAME}` + KPI cards | protected | `Inicio` (top) |
+| `/orders` | OrdersPage: orders table | protected | `Orders` (top) |
+| `/users` | UsersPage: user list + search | protected | `Users` (top) |
+| `/maintainers` | MaintainersPage: placeholder `EmptyState` | protected | `Maintainers` (pinned to the bottom) |
 
-👉 agriops-api (REST API): https://github.com/edwardcruzcruz/agriops-api
+Every protected route renders inside `AppLayout`:
 
-The backend handles:
+```
+.layout (flex row, data-theme="light|dark")
+├─ Sidebar   80px, full height: brand icon (64px cell), Inicio / Orders / Users, Maintainers at the bottom
+└─ column
+   ├─ Header 64px: "AgriOPS" on the left; theme toggle, notifications, user badge, logout on the right
+   └─ main   scrollable content outlet
+```
 
-- Authentication & JWT token issuance
-
-- User management
-
-- Business logic & database operations
-
-- Secure endpoints
-
-- Currently using mock data for Orders module
+UI conventions:
+- New protected pages go under the `AppLayout` route in `App.tsx`. Pages never render their own header or nav.
+- Routes are named after the backend resource, lowercase and plural (`/orders` ↔ `/api/v1/orders`). Sidebar labels use English resource names (the exception is `Inicio`). New maintained entities go into the Maintainers page, not into new sidebar items.
+- Table headers are uppercase, small and muted. Status columns use a badge (`OrderStatusBadge`). Only terminal states get semantic colors (Pending → warning, Delivered → good, Cancelled → critical). An empty list renders `EmptyState`.
+- Theming: each component module declares CSS custom properties for light mode and overrides them under `[data-theme='dark']`. Rules use only `var(--…)`. Colors come from the role + intensity tokens in `_variables.scss` (e.g. `$primary-700`).
+- Icon-only buttons have an `aria-label` (`Switch to dark mode` / `Switch to light mode`, `Notifications`, `Log out`). The Playwright tests find buttons by these names.
 
 ---
 
 ## 🌐 Environment Configuration
 
-Create a .env file in the root directory:
+Copy `.env.example` to `.env`:
 
 ```bash
-# Local development
-VITE_BITACORA_BASE_URL=http://localhost:3000/api/v1
-
-# For production (deployed backend)
-# Replace <YOUR_RENDER_URL> with your actual Render deployment URL
-VITE_BITACORA_BASE_URL=https://<YOUR_RENDER_URL>/api/v1
+VITE_BITACORA_BASE_URL=http://localhost:3000      # auth-service (host only, no /api/v1)
+VITE_ORDERSERVICE_BASE_URL=http://localhost:8080  # order-service (host only)
 ```
 
-An .env.example file is included for reference.
+- Vite inlines `VITE_*` values **at build time**. Changing them requires a rebuild.
+- In development you can leave `VITE_BITACORA_BASE_URL` empty. Auth requests then go through the Vite dev proxy (`vite.config.ts`) to `http://localhost:3000`.
+- Both backends allow only one CORS origin: `FRONTEND_URL` on auth-service and `ConnectionStrings:FrontendHost` on order-service. Locally that's `http://localhost:5173`; in production, `https://agricultureops.netlify.app`. If the frontend runs on another origin, change both backend settings.
+- `.env` and `.env.*` are gitignored. Only `.env.example` is committed.
 
 ---
 
-## ⚙️ Installation
-
-### 1. Clone the repo:
+## ⚙️ Getting Started
 
 ```bash
-git clone https://github.com/your-username/agriops-web.git
+git clone https://github.com/AgricultureOperations/frontend
+cd agriops-web
+npm ci
+cp .env.example .env
+npm run dev          # http://localhost:5173
 ```
 
-### 2. Install dependencies:
+Run auth-service (port 3000) and order-service (port 8080) locally too, or start the whole stack with docker compose (see below).
 
-```bash
-npm install
-```
+### Scripts
 
-### 3. Create .env file with:
-
-```bash
-VITE_API_BASE_URL=http://localhost:3000/api
-```
-
-### 4. Run the development server:
-
-```bash
-npm run dev
-```
+| Command | Description |
+|---|---|
+| `npm run dev` | Vite dev server |
+| `npm run build` | `tsc` type-check + `vite build` → `dist/` (unused locals or parameters fail the build) |
+| `npm run preview` | Serve the built `dist/` |
+| `npm run lint` | ESLint with `--max-warnings 0` |
+| `npm test` | Vitest (watch mode locally) |
+| `npm run test:only` | Vitest single run |
+| `npm run test:ui` | Vitest UI |
+| `npm run coverage` | Coverage report → `coverage/` |
+| `npm run test:e2e` | Playwright visual regression and layout tests |
+| `npm run test:e2e:update` | Regenerate the screenshot baselines after an intended design change |
 
 ---
 
 ## 🔐 Authentication Flow
 
-1. User submits login/register form
+1. The user submits the login form. `useLogin` validates it with the Yup schema.
+2. The hook dispatches `loginThunk`, which calls `postLogin` → `POST /api/v1/auth/login` on auth-service.
+3. On success, the `auth` slice stores the token and email in Redux and `localStorage`, and the hook navigates to `/orders`.
+4. `ProtectedRoute` lets the user through while `localStorage.token` exists.
+5. The axios request interceptor adds `Authorization: Bearer <token>` to every call on both instances.
+6. If any backend returns **401** (except for `/api/v1/auth/login`), the response interceptor clears the token and does a full-page redirect to `/login`.
+7. Logout (header button) clears the token and email from Redux and `localStorage`. There is no refresh token and no server-side logout.
 
-2. Input validated using Yup schemas
-
-3. Component dispatches Redux async thunk (loginThunk / registerThunk)
-
-4. Thunk calls API (postLogin / postRegister) and returns a response
-
-5. Slice updates global Redux state:
-
-- token, loading, error, success
-
-6. Component reads state using typed selector:
-
-```bash
-const { token, loading, error } = useAppSelector(state => state.auth);
-```
-
-7. Navigation is handled in the component/hook:
-
-```bash
-useEffect(() => {
-  if (token) navigate("/dashboard");
-}, [token]);
-```
-
-8. Protected routes (ProtectedRoute.tsx) check token presence in Redux state or localStorage
+Registration dispatches `registerThunk` → `POST /api/v1/auth/register` and returns to `/login` on success. It does not log the user in.
 
 ---
 
-## 🧠 Redux Design Decisions
+## 🧪 Testing
 
-- ✅ Feature-based slices (authSlice, registerSlice)
+### Unit tests (Vitest)
 
-- ✅ Typed hooks for dispatch and selector
+```bash
+npm run test:only
+npx vitest run test/api/bitacora.api.spec.ts   # a single file
+npx vitest run -t "should be configured"        # a single test by name
+```
 
-- ✅ Async thunks encapsulate API calls
+Vitest runs with `jsdom` and globals, and ignores `tests/`.
 
-- ✅ No navigation in slice — handled by components/hooks
+### Visual regression & layout (Playwright)
 
-- ✅ Global state managed centrally via store/store.ts
+```bash
+npx playwright install chromium   # once
+npm run test:e2e                  # starts `npm run dev`, or reuses a server already on the port
+E2E_PORT=5174 npm run test:e2e    # if 5173 is taken (e.g. by the compose frontend)
+npx playwright show-report
+```
 
-- ✅ Slices modular per feature for scalability
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users` and `/maintainers` in **light and dark** mode at desktop and mobile widths. Baselines are in `tests/__screenshots__/`.
+- `app-layout.spec.ts` checks shell geometry and behavior: a full-height sidebar, the header against it, sidebar routing and the `data-theme` toggle.
+- Tests fake a session (`tests/fixtures/auth.ts`) and stub every `/api/v1/**` call, so no backend is needed.
+- A new shell route needs light and dark baselines plus a sidebar-routing assertion. After an intended style change, review the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.
+
+See `tests/README.md` for details.
 
 ---
 
-## 🧠 Design Decisions
+## 🐳 Docker
 
-- ✅ Domain-driven folder structure (feature-based)
+```bash
+docker build -t agriops-web .
+docker run -p 5173:8080 agriops-web
+```
 
-- ✅ Clear separation between API layer and UI components
+- Multi-stage build: `node:18-alpine` runs `npm ci` + `npm run build`, then `nginx:alpine` serves `dist/` as the non-root `nginx` user on **port 8080**. `nginx.conf` falls back to `index.html` for SPA routing and doesn't proxy `/api`.
+- The build copies `frontend/.env` into the image so Vite can inline the `VITE_*` URLs. Those URLs are browser-facing, so they must point to host-published ports (e.g. `http://localhost:3000`), not compose service names.
 
-- ✅ Business logic encapsulated in custom hooks
+### Full stack with docker compose
 
-- ✅ Type-safe interfaces for API responses
+The workspace root's `docker-compose.yml` runs postgres, auth-service, order-service and this frontend (published on `FRONTEND_PORT`, default 5173). Because the URLs are baked in at build time, rebuild after changing `frontend/.env` or any source:
 
-- ✅ Reusable shared components
+```bash
+# from the workspace root
+docker compose up -d --build frontend
+```
 
-- ✅ Protected routing abstraction
+---
 
-- ✅ Centralized error handling per domain 
+## 🚀 CI/CD
 
-- ✅ Use of TanStack Table for flexible data handling
+`.github/workflows/ci-cd.yml` (Node 18) runs on pushes to `main` that touch source, tests, package or config files, or workflows:
 
-- ✅ Deployment on Netlify  
+1. **build-test:** `npm ci` + `npm test` (Vitest).
+2. **deploy:** `npm run build`, then `netlify-cli deploy --prod --dir=dist`.
 
-- ✅ CI/CD pipeline with GitHub Actions
+Playwright tests don't run in CI yet (the baselines are generated on macOS, and CI runs on Linux).
+
+---
+
+## ⚠️ Known Issues
+
+These are contract drifts between the frontend and auth-service. Fix them when you touch these files:
+
+- **The Users page calls the wrong path.** `fetch-users.action.ts` requests `/user` instead of `/api/v1/user`, so the request 404s.
+- The `User` interface declares `password`, because `GET /api/v1/user` currently returns hashes. Fix both sides together.
+- `RegisterResponse` is typed `{ token }`, but auth-service returns `{ id, email }`.
+- `UsersApiResponse` (`{ success, message, data }`) matches no endpoint. Neither backend wraps responses.
+- The Users feature fetches in a local hook instead of a Redux slice, unlike the other features.
+- auth-service returns **403** (not 401) for an expired token on `/api/v1/user`, so the interceptor doesn't log the user out there.
+- The notifications bell is visual only, and the filter bar above list tables is planned but not built.
 
 ---
 
 ## 🔮 Future Improvements
 
-- Role-based authorization (Admin / Operator)
-
-- Token refresh mechanism
-
-- Global API error interceptor
-
-- Replace mock data with real backend API(order-service)
-
-- Additional feature slices for other domains (users)
-
-- Unit & integration testing (Vitest + Testing Library)
+- Order create / edit / delete screens (order-service already exposes the endpoints)
+- Filter bar for list tables
+- Maintainer screens for master data
+- Role-based authorization (Admin / Operator), backed by the backends
+- Token refresh
+- Playwright in CI on Linux baselines
 
 ---
 
 ## 📌 Author
 
-**Edward Cruz**  
+**Edward Cruz**
 Full Stack Developer | React | TypeScript | REST APIs
