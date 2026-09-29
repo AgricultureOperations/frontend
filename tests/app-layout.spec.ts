@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures/auth';
+import { mockProductService } from './fixtures/product-service';
 
 // Covers the shared app shell (Header + Sidebar) that wraps every protected route.
 // Screenshot/visual-regression coverage for these routes lives in
@@ -60,11 +61,11 @@ test.describe('app layout: sidebar navigation', () => {
     await expect(page.getByRole('heading', { name: 'Orders' })).toBeVisible();
   });
 
-  test('lists Inicio, Orders and Users on top and pins Maintainers to the bottom', async ({ page }) => {
+  test('lists Inicio, Orders, Products and Users on top and pins Maintainers to the bottom', async ({ page }) => {
     await page.goto('/dashboard');
 
     const links = page.getByRole('complementary').getByRole('link');
-    await expect(links).toHaveText(['Inicio', 'Orders', 'Users', 'Maintainers']);
+    await expect(links).toHaveText(['Inicio', 'Orders', 'Products', 'Users', 'Maintainers']);
 
     const sidebar = await page.getByRole('complementary').boundingBox();
     const maintainers = await page.getByRole('link', { name: 'Maintainers' }).boundingBox();
@@ -78,6 +79,28 @@ test.describe('app layout: sidebar navigation', () => {
     await page.getByRole('link', { name: 'Maintainers' }).click();
     await expect(page).toHaveURL(/\/maintainers$/);
     await expect(page.getByRole('heading', { name: 'Maintainers' })).toBeVisible();
+  });
+
+  test('routes to /products via the top "Products" item and renders the maintainer table', async ({ page }) => {
+    await mockProductService(page);
+    await page.goto('/dashboard');
+
+    const sidebar = page.getByRole('complementary');
+    await sidebar.getByRole('link', { name: 'Products' }).click();
+
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole('heading', { name: 'Products', level: 1 })).toBeVisible();
+    await expect(page.getByRole('table')).toBeVisible();
+    await expect(page.getByRole('row')).toHaveCount(11);
+    await expect(sidebar.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
+    await expect(sidebar.getByRole('link', { name: 'Maintainers' })).not.toHaveAttribute('aria-current', 'page');
+  });
+
+  test('redirects the old /maintainers/products URL to /products', async ({ page }) => {
+    await page.goto('/maintainers/products');
+
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole('complementary').getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
   });
 
   test('highlights the active route', async ({ page }) => {

@@ -1,0 +1,91 @@
+@use "sass:color";
+@use "../../variables" as *;
+
+.button {
+    --primary-bg: #{$primary-700};
+    --primary-bg-hover: #{color.adjust($primary-700, $lightness: -6%)};
+    --outline-text: #{$neutral-800};
+    --outline-border: #{$neutral-200};
+    --outline-bg: #{$neutral-100};
+    --outline-bg-hover: #{$surface-muted};
+
+    [data-theme='dark'] & {
+        --outline-text: #{$neutral-100};
+        --outline-border: #{$dark-border};
+        --outline-bg: transparent;
+        --outline-bg-hover: #{$dark-surface-hover};
+    }
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 16px;
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-sm;
+    border-radius: $radius-sm;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: $transition;
+
+    svg {
+        font-size: 16px;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: 2px;
+    }
+}
+
+.primary {
+    color: $neutral-100;
+    background-color: var(--primary-bg);
+
+    &:hover:not(:disabled) {
+        background-color: var(--primary-bg-hover);
+    }
+}
+
+.outline {
+    color: var(--outline-text);
+    background-color: var(--outline-bg);
+    border-color: var(--outline-border);
+
+    &:hover:not(:disabled) {
+        background-color: var(--outline-bg-hover);
+    }
+}
+
+.danger {
+    color: $neutral-100;
+    background-color: $status-critical;
+
+    &:hover:not(:disabled) {
+        background-color: color.adjust($status-critical, $lightness: -6%);
+    }
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

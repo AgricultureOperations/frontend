@@ -6,6 +6,7 @@ import { UsersPage } from './features/users';
 import { DashboardPage } from './features/dashboard';
 import { OrdersPage } from './features/orders';
 import { MaintainersPage } from './features/maintainers';
+import { ProductsMaintainerPage } from './features/products';
 import { AppLayout } from './shared/components/AppLayout';
 
 function App() {
@@ -25,7 +26,10 @@ function App() {
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/users' element={<UsersPage />} />
           <Route path='/orders' element={<OrdersPage />} />
+          <Route path='/products' element={<ProductsMaintainerPage />} />
           <Route path='/maintainers' element={<MaintainersPage />} />
+          {/* Products used to live under Maintainers; keep old links working. */}
+          <Route path='/maintainers/products' element={<Navigate to="/products" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

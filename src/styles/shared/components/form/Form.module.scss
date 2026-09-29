@@ -1,0 +1,297 @@
+@use "../../../variables" as *;
+
+// Form building blocks for dialogs. Custom properties are read from the nearest [data-theme].
+.section {
+    --section-bg: #{$neutral-100};
+    --section-border: #{$neutral-200};
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --label: #{$neutral-700};
+    --control-bg: #{$surface-muted};
+    --control-border: #{$neutral-200};
+    --control-text: #{$neutral-800};
+    --placeholder: #{$neutral-400};
+    --segment-bg: #{$surface-muted};
+    --segment-text: #{$neutral-500};
+    --badge-bg: #{rgba($primary-700, 0.1)};
+    --badge-text: #{$primary-700};
+    --track: #{$neutral-300};
+
+    [data-theme='dark'] & {
+        --section-bg: #{$dark-surface};
+        --section-border: #{$dark-border};
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --label: #{$dark-text-label};
+        --control-bg: #{$dark-surface};
+        --control-border: #{$dark-border};
+        --control-text: #{$neutral-100};
+        --placeholder: #{$neutral-600};
+        --segment-bg: #{$dark-surface};
+        --segment-text: #{$neutral-400};
+        --badge-bg: #{rgba($dark-link, 0.14)};
+        --badge-text: #{$dark-link};
+        --track: #{rgba(255, 255, 255, 0.15)};
+    }
+
+    padding: 16px;
+    background-color: var(--section-bg);
+    border: 1px solid var(--section-border);
+    border-radius: $radius-md;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $gap-base;
+    margin-bottom: 14px;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: $font-weight-semibold;
+    color: var(--title);
+    text-align: left;
+}
+
+.sectionDescription {
+    margin: 2px 0 0;
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--muted);
+    text-align: left;
+}
+
+.sectionBadge {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: $font-weight-semibold;
+    color: var(--badge-text);
+    background-color: var(--badge-bg);
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+
+    @media (max-width: $bp-tablet) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.labelRow {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+}
+
+.label {
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    font-weight: $font-weight-medium;
+    color: var(--label);
+}
+
+.required {
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: $status-critical;
+}
+
+.control {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    font-family: $font-family-base;
+    font-size: 13px;
+    color: var(--control-text);
+    background-color: var(--control-bg);
+    border: 1px solid var(--control-border);
+    border-radius: $radius-sm;
+    transition: $transition;
+
+    &::placeholder {
+        color: var(--placeholder);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary-600;
+        box-shadow: 0 0 0 3px rgba($primary-600, 0.2);
+    }
+
+    // Native <select> menus follow color-scheme, not our tokens.
+    [data-theme='dark'] & {
+        color-scheme: dark;
+    }
+}
+
+// Custom chevron (as in the reference) so selects match the inputs' font and height;
+// the native control renders its own, larger text. $neutral-400 reads in both themes.
+select.control {
+    appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+}
+
+.controlInvalid {
+    border-color: $status-critical;
+
+    &:focus {
+        border-color: $status-critical;
+        box-shadow: 0 0 0 3px rgba($status-critical, 0.2);
+    }
+}
+
+.hint {
+    font-size: 11px;
+    line-height: 15px;
+    color: var(--muted);
+}
+
+.error {
+    font-size: 11px;
+    line-height: 15px;
+    color: $status-critical;
+}
+
+.segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    background-color: var(--segment-bg);
+    border: 1px solid var(--control-border);
+    border-radius: $radius-sm;
+}
+
+.segment {
+    flex: 1;
+    min-width: 0;
+    height: 30px;
+    padding: 0 8px;
+    font-family: $font-family-base;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: var(--segment-text);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: $transition;
+
+    // At phone width a long option ("Descontinuado") gets its own row instead of being cut.
+    @media (max-width: $bp-tablet) {
+        flex: 1 1 auto;
+        overflow: visible;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: 1px;
+    }
+}
+
+.segmentActive {
+    color: $neutral-100;
+    background-color: $primary-700;
+}
+
+.switchRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 36px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    background-color: var(--control-bg);
+    border: 1px solid var(--control-border);
+    border-radius: $radius-sm;
+    cursor: pointer;
+}
+
+.switchText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.switchLabel {
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    font-weight: $font-weight-medium;
+    color: var(--label);
+}
+
+// Visually hidden but focusable; the track shows its state.
+.switchInput {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+}
+
+.switchTrack {
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    background-color: var(--track);
+    border-radius: 999px;
+    transition: $transition;
+}
+
+.switchThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: $neutral-100;
+    border-radius: 50%;
+    box-shadow: $shadow-sm;
+    transition: $transition;
+}
+
+.switchInput:checked + .switchTrack {
+    background-color: $primary-700;
+
+    .switchThumb {
+        transform: translateX(16px);
+    }
+}
+
+.switchInput:focus-visible + .switchTrack {
+    outline: 2px solid rgba($primary-600, 0.5);
+    outline-offset: 2px;
+}

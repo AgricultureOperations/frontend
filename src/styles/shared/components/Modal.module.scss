@@ -1,0 +1,176 @@
+@use "../../variables" as *;
+
+// Reference: Admisiones Online "Nueva solicitud en borrador" dialog.
+// Backdrop = Tailwind bg-black/50 + backdrop-blur-sm.
+.backdrop {
+    --dialog-bg: #{$neutral-100};
+    --dialog-border: #{$neutral-200};
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --eyebrow: #{$primary-700};
+    --close: #{$neutral-400};
+    --close-hover-bg: #{$surface-muted};
+    --close-hover: #{$neutral-800};
+
+    [data-theme='dark'] & {
+        --dialog-bg: #{$dark-shell-surface};
+        --dialog-border: #{$dark-border};
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --eyebrow: #{$dark-link};
+        --close: #{$neutral-400};
+        --close-hover-bg: #{$dark-surface-hover};
+        --close-hover: #{$neutral-100};
+    }
+
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    font-family: $font-family-base;
+    text-align: left;
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 100%;
+    background-color: var(--dialog-bg);
+    border: 1px solid var(--dialog-border);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xl;
+    overflow: hidden;
+}
+
+.md {
+    max-width: 680px;
+}
+
+.sm {
+    max-width: 440px;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $gap-base;
+    padding: 24px 24px 16px;
+    flex-shrink: 0;
+}
+
+.headings {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.eyebrow {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+}
+
+.title {
+    margin: 0;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+    text-align: left;
+}
+
+.subtitle {
+    margin: 2px 0 0;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: var(--muted);
+    text-align: left;
+}
+
+.close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    padding: 0;
+    font-size: 18px;
+    color: var(--close);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover:not(:disabled) {
+        color: var(--close-hover);
+        background-color: var(--close-hover-bg);
+    }
+}
+
+.body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--dialog-border);
+    flex-shrink: 0;
+}
+
+.confirm {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.confirmIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.12);
+    border-radius: 50%;
+}
+
+.confirmMessage {
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--muted);
+
+    p {
+        margin: 0 0 6px;
+        font-size: inherit;
+        color: inherit;
+        text-align: left;
+    }
+
+    strong {
+        color: var(--title);
+    }
+}

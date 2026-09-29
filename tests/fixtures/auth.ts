@@ -1,4 +1,5 @@
 import { test as base } from '@playwright/test';
+import { isProductServiceUrl } from './product-service';
 
 // ProtectedRoute only checks that localStorage.token is a non-empty string (see
 // architecture.md: "navigation UX, not security"), so specs fake a session instead of
@@ -22,6 +23,15 @@ export const test = base.extend<{ fakeSession: void }>({
       // so the shell renders deterministically regardless of which env is configured.
       await page.route('**/api/v1/**', (route) =>
         route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
+      );
+      // product-service lists are paginated ({ data, meta }), not bare arrays. Registered after the
+      // catch-all so it wins; products-maintainer.spec.ts overrides it with a stateful mock.
+      await page.route(isProductServiceUrl, (route) =>
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ data: [], meta: { page: 1, limit: 10, total: 0, totalPages: 0 } }),
+        }),
       );
 
       await use();

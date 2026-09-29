@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import styles from "../../styles/shared/components/AppLayout.module.scss";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
+import { ToastViewport } from "./ToastViewport";
 import { useTheme } from "../hooks/useTheme";
 
 export const AppLayout = () => {
@@ -16,6 +17,7 @@ export const AppLayout = () => {
                     <Outlet />
                 </main>
             </div>
+            <ToastViewport />
         </div>
     );
 };

@@ -1,0 +1,89 @@
+@use "../../../variables" as *;
+
+.page {
+    --title: #{$neutral-800};
+    --subtitle: #{$neutral-500};
+    --link: #{$primary-700}; // spinner accent
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+
+    [data-theme='dark'] & {
+        --title: #{$neutral-100};
+        --subtitle: #{$neutral-400};
+        --link: #{$dark-link};
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: $gap-md;
+    text-align: left;
+}
+
+.headerRow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $gap-md;
+    flex-wrap: wrap;
+}
+
+.titleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title {
+    margin: 0;
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+    text-align: left;
+}
+
+// global.scss's `p { text-align: center }` targets <p> directly, so alignment is explicit.
+.subtitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--subtitle);
+    text-align: left;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    overflow: hidden;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: $gap-xl;
+    font-size: $font-size-sm;
+    color: var(--subtitle);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--link);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

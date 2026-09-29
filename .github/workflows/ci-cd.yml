@@ -65,11 +65,14 @@ jobs:
 
       - name: Build project
         run: npm run build
+        # Vite inlines VITE_* at build time, so they must be set here, not on the deploy step.
+        env:
+          VITE_BITACORA_BASE_URL: ${{ secrets.VITE_BITACORA_BASE_URL }}
+          VITE_ORDERSERVICE_BASE_URL: ${{ secrets.VITE_ORDERSERVICE_BASE_URL }}
+          VITE_PRODUCTSERVICE_BASE_URL: ${{ secrets.VITE_PRODUCTSERVICE_BASE_URL }}
 
       - name: Deploy to Netlify
         run: npx netlify-cli deploy --prod --dir=dist
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          VITE_BITACORA_BASE_URL: ${{ secrets.VITE_BITACORA_BASE_URL }}
-          VITE_ORDERSERVICE_BASE_URL: ${{ secrets.VITE_ORDERSERVICE_BASE_URL }}

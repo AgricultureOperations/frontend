@@ -39,3 +39,94 @@
     color: var(--subtitle);
     text-align: left;
 }
+
+.grid {
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+    --border-hover: #{$primary-700};
+    --icon-bg: #{rgba($primary-700, 0.1)};
+    --icon: #{$primary-700};
+    --muted: #{$neutral-500};
+
+    [data-theme='dark'] & {
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+        --border-hover: #{$dark-link};
+        --icon-bg: #{rgba($dark-link, 0.14)};
+        --icon: #{$dark-link};
+        --muted: #{$neutral-400};
+    }
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $gap-md;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px;
+    text-decoration: none;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    transition: $transition;
+
+    &:hover,
+    &:focus-visible {
+        border-color: var(--border-hover);
+        outline: none;
+    }
+}
+
+.cardIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: var(--icon);
+    background-color: var(--icon-bg);
+    border-radius: $radius-md;
+}
+
+.cardText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.cardTitle {
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    font-weight: $font-weight-semibold;
+    color: var(--title);
+}
+
+.cardDescription {
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--muted);
+}
+
+.cardMeta {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 15px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+}
+
+.cardChevron {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--muted);
+}

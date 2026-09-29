@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures/auth';
+import { mockProductService } from './fixtures/product-service';
 
 // Visual regression for the two real protected routes behind AppLayout, in light and
 // dark mode. Baselines live in tests/__screenshots__/. See tests/README.md to run and
@@ -14,6 +15,9 @@ const routes = [
   { path: '/dashboard', slug: 'dashboard', readyHeading: /Hola,/ },
   { path: '/orders', slug: 'orders', readyHeading: /Orders/ },
   { path: '/maintainers', slug: 'maintainers', readyHeading: /Maintainers/ },
+  // Empty list (fixtures/auth.ts stubs product-service with an empty page). The seeded table and
+  // the create modal are covered by products-maintainer.spec.ts.
+  { path: '/products', slug: 'products', readyHeading: /^Products$/ },
   { path: '/users', slug: 'users', readyHeading: /Users/ },
 ];
 
@@ -52,3 +56,26 @@ for (const { name, size } of viewports) {
     }
   });
 }
+
+// The sidebar with the top-level "Products" item active, reached by clicking it, over the seeded table.
+test.describe('sidebar: Products active', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('matches the light baseline, then the dark baseline after the theme toggle', async ({ page }) => {
+    await mockProductService(page);
+    await page.goto('/dashboard');
+    await page.getByRole('complementary').getByRole('link', { name: 'Products' }).click();
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole('row')).toHaveCount(11);
+    await page.evaluate(() => document.fonts.ready);
+    await page.mouse.move(0, 0);
+
+    await expect(page.locator('[data-theme="light"]')).toBeVisible();
+    await expect(page).toHaveScreenshot('sidebar-products-active.png');
+
+    await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+    await expect(page.locator('[data-theme="dark"]')).toBeVisible();
+    await page.mouse.move(0, 0);
+    await expect(page).toHaveScreenshot('sidebar-products-active-dark.png');
+  });
+});

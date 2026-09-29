@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { FiHome, FiPackage, FiSettings, FiUsers } from "react-icons/fi";
+import { FiBox, FiHome, FiPackage, FiSettings, FiUsers } from "react-icons/fi";
 import styles from "../../styles/shared/components/Sidebar.module.scss";
 import plantIcon from "../../assets/plant-icon.png";
 
 const navItems = [
     { to: "/dashboard", label: "Inicio", icon: <FiHome aria-hidden /> },
     { to: "/orders", label: "Orders", icon: <FiPackage aria-hidden /> },
+    // FiBox, not FiPackage: Orders already uses the package icon.
+    { to: "/products", label: "Products", icon: <FiBox aria-hidden /> },
     { to: "/users", label: "Users", icon: <FiUsers aria-hidden /> },
 ];
 

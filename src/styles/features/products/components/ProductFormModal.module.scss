@@ -1,0 +1,62 @@
+@use "../../../variables" as *;
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.submitError {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.08);
+    border: 1px solid rgba($status-critical, 0.3);
+    border-radius: $radius-sm;
+
+    svg {
+        flex-shrink: 0;
+        font-size: 16px;
+    }
+}
+
+.upper {
+    text-transform: uppercase;
+
+    &::placeholder {
+        text-transform: none;
+    }
+}
+
+// Presentation size + unit share one grid cell.
+.inline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+}
+
+.switchCell {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 22px; // aligns with inputs that have a label above them
+
+    @media (max-width: $bp-tablet) {
+        padding-top: 0;
+    }
+}
+
+.switchStack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 22px;
+
+    @media (max-width: $bp-tablet) {
+        padding-top: 0;
+    }
+}

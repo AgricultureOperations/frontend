@@ -1,0 +1,180 @@
+@use "../../../variables" as *;
+
+.scroll {
+    --border: #{$neutral-200};
+    --header-text: #{$neutral-500};
+    --row-text: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --row-hover: #{$surface-muted};
+    --icon: #{$neutral-500};
+    --icon-hover-bg: #{$surface-muted};
+    --icon-hover: #{$primary-700};
+
+    [data-theme='dark'] & {
+        --border: #{$dark-border};
+        --header-text: #{$neutral-400};
+        --row-text: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --row-hover: #{$dark-surface-hover};
+        --icon: #{$neutral-400};
+        --icon-hover-bg: #{$dark-surface-hover};
+        --icon-hover: #{$dark-link};
+    }
+
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    font-size: $font-size-sm;
+
+    thead th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: $font-size-xs;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-weight: $font-weight-semibold;
+        color: var(--header-text);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    tbody td {
+        padding: 12px 16px;
+        color: var(--row-text);
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    tbody tr:hover td {
+        background-color: var(--row-hover);
+    }
+}
+
+.numeric {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.actionsCell {
+    width: 1%;
+    text-align: right !important;
+}
+
+.sku {
+    font-weight: $font-weight-semibold;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.nameCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.name {
+    font-weight: $font-weight-medium;
+}
+
+.hazard {
+    padding: 1px 8px;
+    font-size: 10px;
+    line-height: 16px;
+    font-weight: $font-weight-semibold;
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.12);
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.category {
+    color: var(--muted);
+    text-transform: capitalize;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 16px;
+    color: var(--icon);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover:not(:disabled) {
+        color: var(--icon-hover);
+        background-color: var(--icon-hover-bg);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+.danger:hover:not(:disabled) {
+    color: $status-critical;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.pagination {
+    --border: #{$neutral-200};
+    --muted: #{$neutral-500};
+    --icon: #{$neutral-500};
+    --icon-hover-bg: #{$surface-muted};
+    --icon-hover: #{$primary-700};
+
+    [data-theme='dark'] & {
+        --border: #{$dark-border};
+        --muted: #{$neutral-400};
+        --icon: #{$neutral-400};
+        --icon-hover-bg: #{$dark-surface-hover};
+        --icon-hover: #{$dark-link};
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $gap-base;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.paginationInfo {
+    font-size: $font-size-xs;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.paginationButtons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

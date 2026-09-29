@@ -38,7 +38,8 @@ frontend ──(login/register, users)──▶ auth-service   ──issues JWT�
 - Dashboard with order KPIs (total, pending, delivered, cancelled) from order-service
 - Orders table (TanStack Table) with status badges and an empty state
 - Users list with client-side search
-- Maintainers page (placeholder for master data and system settings)
+- Products maintainer (`/products`, top-level sidebar item): paginated table plus create/edit modal, delete confirmation and toasts, backed by product-service
+- Maintainers hub (`/maintainers`) for general configuration (placeholder until a secondary maintainer is added)
 - Light / dark theme toggle
 - Vitest unit tests and Playwright visual regression tests (light + dark, desktop + mobile)
 
@@ -94,16 +95,19 @@ UI (pages/components) → hooks (business logic) → Redux slices/thunks (state)
 
 ```bash
 src/
- ├── api/                     # createAxiosApi factory + bitacoraApi (auth-service), orderApi (order-service)
+ ├── api/                     # createAxiosApi factory + bitacoraApi (auth-service), orderApi (order-service), productApi (product-service)
  ├── features/
  │    ├── auth/               # Login & Register: apis, hooks, interfaces, pages, states (auth + register slices), validations
  │    ├── dashboard/          # DashboardPage + StatCard (KPIs built from the orders slice)
  │    ├── orders/             # get-orders API, order slice, useOrdersTable, OrdersTable, OrderStatusBadge, OrdersPage
  │    ├── users/              # fetch-users API, useUser/useApp hooks, UserList, UsersPage
- │    └── maintainers/        # MaintainersPage (placeholder)
+ │    ├── maintainers/        # MaintainersPage: hub for secondary maintainers (empty placeholder today)
+ │    └── products/           # Products maintainer: apis, product slice, hooks, table, form modal, delete dialog
  ├── routes/ProtectedRoute.tsx
  ├── shared/
- │    ├── components/         # AppLayout, Header, Sidebar, EmptyState, Spinner, SharedError, CustomInput, SearchBar
+ │    ├── components/         # AppLayout, Header, Sidebar, EmptyState, Modal, ConfirmDialog, Button, ToastViewport,
+ │    │                       # form/ (FormSection, FormField, SegmentedControl, Switch), Spinner, SharedError, …
+ │    ├── states/toast.slice.ts
  │    ├── hooks/useTheme.ts
  │    └── utils/formatUserDisplay.ts
  ├── store/                   # store.ts (registers every slice), hooks.ts (typed hooks)
@@ -129,14 +133,16 @@ Each feature exposes only its pages from `index.ts`. A new domain copies this sh
 | `/register` | RegisterPage (redirects to `/login` on success) | public | — |
 | `/dashboard` | DashboardPage: `Hola, {NAME}` + KPI cards | protected | `Inicio` (top) |
 | `/orders` | OrdersPage: orders table | protected | `Orders` (top) |
+| `/products` | ProductsMaintainerPage: products CRUD against product-service | protected | `Products` (top, below Orders) |
 | `/users` | UsersPage: user list + search | protected | `Users` (top) |
-| `/maintainers` | MaintainersPage: placeholder `EmptyState` | protected | `Maintainers` (pinned to the bottom) |
+| `/maintainers` | MaintainersPage: hub, placeholder `EmptyState` for now | protected | `Maintainers` (pinned to the bottom) |
+| `/maintainers/products` | redirects to `/products` (old URL) | protected | — |
 
 Every protected route renders inside `AppLayout`:
 
 ```
 .layout (flex row, data-theme="light|dark")
-├─ Sidebar   80px, full height: brand icon (64px cell), Inicio / Orders / Users, Maintainers at the bottom
+├─ Sidebar   80px, full height: brand icon (64px cell), Inicio / Orders / Products / Users, Maintainers at the bottom
 └─ column
    ├─ Header 64px: "AgriOPS" on the left; theme toggle, notifications, user badge, logout on the right
    └─ main   scrollable content outlet
@@ -144,7 +150,7 @@ Every protected route renders inside `AppLayout`:
 
 UI conventions:
 - New protected pages go under the `AppLayout` route in `App.tsx`. Pages never render their own header or nav.
-- Routes are named after the backend resource, lowercase and plural (`/orders` ↔ `/api/v1/orders`). Sidebar labels use English resource names (the exception is `Inicio`). New maintained entities go into the Maintainers page, not into new sidebar items.
+- Routes are named after the backend resource, lowercase and plural (`/orders` ↔ `/api/v1/orders`). Sidebar labels use English resource names (the exception is `Inicio`). Core master data (Products) has its own sidebar item; secondary master data goes into the Maintainers hub.
 - Table headers are uppercase, small and muted. Status columns use a badge (`OrderStatusBadge`). Only terminal states get semantic colors (Pending → warning, Delivered → good, Cancelled → critical). An empty list renders `EmptyState`.
 - Theming: each component module declares CSS custom properties for light mode and overrides them under `[data-theme='dark']`. Rules use only `var(--…)`. Colors come from the role + intensity tokens in `_variables.scss` (e.g. `$primary-700`).
 - Icon-only buttons have an `aria-label` (`Switch to dark mode` / `Switch to light mode`, `Notifications`, `Log out`). The Playwright tests find buttons by these names.
@@ -158,6 +164,7 @@ Copy `.env.example` to `.env`:
 ```bash
 VITE_BITACORA_BASE_URL=http://localhost:3000      # auth-service (host only, no /api/v1)
 VITE_ORDERSERVICE_BASE_URL=http://localhost:8080  # order-service (host only)
+VITE_PRODUCTSERVICE_BASE_URL=http://localhost:3001 # product-service (host only)
 ```
 
 - Vite inlines `VITE_*` values **at build time**. Changing them requires a rebuild.
@@ -231,7 +238,8 @@ E2E_PORT=5174 npm run test:e2e    # if 5173 is taken (e.g. by the compose fronte
 npx playwright show-report
 ```
 
-- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users` and `/maintainers` in **light and dark** mode at desktop and mobile widths. Baselines are in `tests/__screenshots__/`.
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users`, `/maintainers` and `/products` in **light and dark** mode at desktop and mobile widths, plus `sidebar-products-active{,-dark}.png`. Baselines are in `tests/__screenshots__/`.
+- `products-maintainer.spec.ts` runs the Products maintainer against a stateful product-service mock (`tests/fixtures/product-service.ts`): navigation, the modal's fields and validation, create → edit → delete, the duplicate-SKU error, empty and error states, and the `products-maintainer-list.png` / `create-product-modal*.png` screenshots.
 - `app-layout.spec.ts` checks shell geometry and behavior: a full-height sidebar, the header against it, sidebar routing and the `data-theme` toggle.
 - Tests fake a session (`tests/fixtures/auth.ts`) and stub every `/api/v1/**` call, so no backend is needed.
 - A new shell route needs light and dark baselines plus a sidebar-routing assertion. After an intended style change, review the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.

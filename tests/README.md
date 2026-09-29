@@ -7,11 +7,35 @@
 | `login-light-desktop.png`, `login-light-mobile.png` | default (light) |
 | `login-dark-desktop.png`, `login-dark-mobile.png` | after clicking "Switch to dark mode" |
 
-`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders`, `/users` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…` and `users-…` and `maintainers-…` likewise.
+`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders`, `/products`, `/users` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…`, `products-…`, `users-…` and `maintainers-…` likewise. A separate test clicks the sidebar `Products` item over seeded data (`fixtures/product-service.ts`) and saves `sidebar-products-active.png` / `sidebar-products-active-dark.png` (1440x900, viewport).
 
 Both specs fake a signed-in session instead of exercising the real login form: `tests/fixtures/auth.ts` seeds `localStorage.token`/`localStorage.email` before each test (this is enough for `ProtectedRoute`, which only checks that a token string exists - see `architecture.md`) and stubs every `/api/v1/**` call to `200 []`, so a real backend can't 401 the fake token and bounce the test to `/login` via the app's 401 interceptor.
 
 `app-layout.spec.ts` covers the same shell's *behavior* (header content, sidebar routing, the theme toggle's `data-theme` attribute, the orders empty state) rather than pixels - keep new pixel assertions in the `visual-regression-*` files and new behavioral assertions there.
+
+## Products maintainer (`products-maintainer.spec.ts`)
+
+Drives `/products` (top-level sidebar item) against `fixtures/product-service.ts`, a **stateful in-browser mock** of product-service's `/api/v1/products`. It seeds 12 products with fixed timestamps, returns pages newest first, answers POST/PATCH/DELETE like the real service (201, 200, 204, 404, and 409 on a duplicate SKU) and records every request in `api.requests`, so tests can check the bodies the UI sends. `api.failLists(500)` makes list calls fail until `api.failLists(null)`. (React StrictMode fetches twice in dev, so a one-shot failure would be masked.)
+
+| Test | Checks |
+|---|---|
+| navigation | sidebar `Products` (from `/orders`) → `/products`, the table renders, and the item becomes `aria-current` |
+| list | column headers, 10 rows per page, first row, pagination text and buttons |
+| modal render | every section and input of "Nuevo Producto", the toggles, the switches, unit options (kg, Saco, Tonelada, Quintal first), and the hazardous pill |
+| modal validation | required and cross-field errors (max ≥ min, size needs a unit) with no API call; Cancelar, X and Escape close it |
+| CRUD | create (POST body), row appears first; edit (PATCH body), row updates; delete: Cancelar keeps the row, Eliminar removes it; a toast for each step |
+| duplicate SKU | the server's 409 message shows inside the modal and as a toast, and the modal stays open |
+| empty / error | `No products yet`; `No se pudieron cargar los productos` + `Reintentar` |
+
+Screenshots at 1440x900 (viewport, not full page): `products-maintainer-list.png` (seeded table), `create-product-modal.png` and `create-product-modal-dark.png`. The empty `/products` page is also in `visual-regression-dashboard.spec.ts` (`products-{light,dark}-{desktop,mobile}.png`).
+
+```bash
+E2E_PORT=5174 npx playwright test tests/products-maintainer.spec.ts
+E2E_PORT=5174 npx playwright test tests/products-maintainer.spec.ts -g "visual" --update-snapshots   # after an intended modal/table change
+```
+
+- `fixtures/auth.ts` stubs product-service with an empty page (`{ data: [], meta }`) for every spec, and this spec's mock overrides it (Playwright tries routes in reverse registration order).
+- Match product-service URLs with `isProductServiceUrl`. The glob `**/api/v1/products**` does **not** match `/api/v1/products/<id>`, so a PATCH or DELETE would fall through to the catch-all `[]` and appear to succeed.
 
 These run separately from the Vitest unit tests (`npm test`), which ignore `tests/`.
 
@@ -37,6 +61,8 @@ E2E_PORT=5174 npm run test:e2e
 ```
 
 ## Update snapshots when design tokens change
+
+Playwright rewrites only baselines that fail comparison. If a page was redesigned but the diff stays under `maxDiffPixelRatio`, delete its PNGs first so they are regenerated.
 
 A failing run after editing `src/styles/_variables.scss` or a `*.module.scss` file is expected. Do it in this order:
 
