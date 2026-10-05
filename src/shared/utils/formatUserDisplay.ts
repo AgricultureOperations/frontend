@@ -1,6 +1,6 @@
-// auth-service only issues { id, email } (see architecture.md); there is no "name" field
-// to read, backend or claim. Derive a display name from the email's local part instead
-// of decoding the JWT, per the "no client-side JWT decoding for UI info" rule.
+// Fallback display name until GET /auth/me (which carries `name`) has loaded, or if it fails.
+// Derived from the email's local part instead of decoding the JWT, per the
+// "no client-side JWT decoding for UI info" rule (architecture.md).
 export const getDisplayNameFromEmail = (email: string | null): string => {
     if (!email) return "";
     const localPart = email.split("@")[0];

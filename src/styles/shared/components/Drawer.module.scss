@@ -1,0 +1,131 @@
+@use "../../variables" as *;
+
+// Reference: Admisiones "Nuevo asesor" side panel (448px wide, full height, white/dark surface,
+// header and footer separated by a hairline). Backdrop matches Modal (bg-black/50 + backdrop-blur-sm).
+.backdrop {
+    --panel-bg: #{$neutral-100};
+    --panel-border: #{$neutral-200};
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --close: #{$neutral-400};
+    --close-hover-bg: #{$surface-muted};
+    --close-hover: #{$neutral-800};
+
+    [data-theme='dark'] & {
+        --panel-bg: #{$dark-shell-surface};
+        --panel-border: #{$dark-border};
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --close: #{$neutral-400};
+        --close-hover-bg: #{$dark-surface-hover};
+        --close-hover: #{$neutral-100};
+    }
+
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    font-family: $font-family-base;
+    text-align: left;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    width: 448px;
+    max-width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: var(--panel-bg);
+    border-left: 1px solid var(--panel-border);
+    box-shadow: $shadow-xl;
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(24px);
+        opacity: 0;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $gap-base;
+    padding: 24px;
+    border-bottom: 1px solid var(--panel-border);
+    flex-shrink: 0;
+}
+
+.headings {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.title {
+    margin: 0;
+    font-size: $font-size-xl;
+    line-height: $line-height-xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+    text-align: left;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--muted);
+    text-align: left;
+}
+
+.close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    padding: 0;
+    font-size: 20px;
+    color: var(--close);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover:not(:disabled) {
+        color: var(--close-hover);
+        background-color: var(--close-hover-bg);
+    }
+}
+
+// The footer follows the fields (as in the reference) instead of sitting at the bottom of the panel;
+// a long form still scrolls, with the footer kept below it.
+.body {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin: 0 24px;
+    padding: 20px 0 24px;
+    border-top: 1px solid var(--panel-border);
+    flex-shrink: 0;
+}

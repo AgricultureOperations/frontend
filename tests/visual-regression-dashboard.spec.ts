@@ -18,7 +18,9 @@ const routes = [
   // Empty list (fixtures/auth.ts stubs product-service with an empty page). The seeded table and
   // the create modal are covered by products-maintainer.spec.ts.
   { path: '/products', slug: 'products', readyHeading: /^Products$/ },
-  { path: '/users', slug: 'users', readyHeading: /Users/ },
+  // Seeded by fixtures/auth-service.ts (12 users, signed in as the admin).
+  { path: '/users', slug: 'users', readyHeading: /^Users$/ },
+  { path: '/roles', slug: 'roles', readyHeading: /^Roles & Permissions$/ },
 ];
 
 const viewports = [

@@ -1,0 +1,118 @@
+@use "../../variables" as *;
+
+.pagination {
+    --border: #{$neutral-200};
+    --muted: #{$neutral-500};
+    --text: #{$neutral-650};
+    --control-bg: #{$neutral-100};
+    --hover-bg: #{$surface-muted};
+
+    [data-theme='dark'] & {
+        --border: #{$dark-border};
+        --muted: #{$neutral-400};
+        --text: #{$dark-text-label};
+        --control-bg: transparent;
+        --hover-bg: #{$dark-surface-hover};
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.info {
+    font-size: $font-size-sm;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.sizeSelect {
+    height: 34px;
+    padding: 0 32px 0 12px;
+    font-family: $font-family-base;
+    font-size: 13px;
+    color: var(--text);
+    background-color: var(--control-bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid var(--border);
+    border-radius: $radius-sm;
+    appearance: none;
+    cursor: pointer;
+
+    [data-theme='dark'] & {
+        color-scheme: dark;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: 1px;
+    }
+}
+
+.pages {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.pageButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    font-family: $font-family-base;
+    font-size: 13px;
+    font-weight: $font-weight-medium;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    transition: $transition;
+
+    &:hover:not(:disabled):not(.pageActive) {
+        background-color: var(--hover-bg);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: 1px;
+    }
+}
+
+.pageActive {
+    color: $neutral-100;
+    background-color: $primary-700;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}

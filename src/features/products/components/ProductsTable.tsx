@@ -7,11 +7,13 @@ import { ProductStatusBadge } from "./ProductStatusBadge";
 
 interface Props {
     data: Product[];
-    onEdit: (product: Product) => void;
-    onDelete: (product: Product) => void;
+    // Omitted when the user lacks products:edit / products:delete: the button isn't rendered.
+    onEdit?: (product: Product) => void;
+    onDelete?: (product: Product) => void;
 }
 
 export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
+    const hasActions = !!onEdit || !!onDelete;
     const columns: ColumnDef<Product>[] = [
         { header: "SKU", accessorKey: "sku", cell: ({ row }) => <span className={styles.sku}>{row.original.sku}</span> },
         {
@@ -35,22 +37,28 @@ export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
         },
         { header: "Min Stock", accessorKey: "minStockLevel", meta: { numeric: true } },
         { header: "Status", accessorKey: "status", cell: ({ row }) => <ProductStatusBadge status={row.original.status} /> },
+    ];
+    if (hasActions) columns.push(
         {
             id: "actions",
             header: () => <span className={styles.srOnly}>Actions</span>,
             meta: { actions: true },
             cell: ({ row }) => (
                 <div className={styles.actions}>
-                    <button type="button" className={styles.iconButton} onClick={() => onEdit(row.original)} aria-label={`Editar ${row.original.sku}`} title="Editar">
-                        <FiEdit2 aria-hidden />
-                    </button>
-                    <button type="button" className={`${styles.iconButton} ${styles.danger}`} onClick={() => onDelete(row.original)} aria-label={`Eliminar ${row.original.sku}`} title="Eliminar">
-                        <FiTrash2 aria-hidden />
-                    </button>
+                    {onEdit && (
+                        <button type="button" className={styles.iconButton} onClick={() => onEdit(row.original)} aria-label={`Editar ${row.original.sku}`} title="Editar">
+                            <FiEdit2 aria-hidden />
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button type="button" className={`${styles.iconButton} ${styles.danger}`} onClick={() => onDelete(row.original)} aria-label={`Eliminar ${row.original.sku}`} title="Eliminar">
+                            <FiTrash2 aria-hidden />
+                        </button>
+                    )}
                 </div>
             ),
         },
-    ];
+    );
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel(), getRowId: (row) => row.id });
 

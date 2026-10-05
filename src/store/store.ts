@@ -3,6 +3,8 @@ import { authReducer } from "../features/auth/states/auth.slice";
 import { registerReducer } from "../features/auth/states/register.slice";
 import { orderReducer } from "../features/orders/states/order.slice";
 import { productReducer } from "../features/products/states/product.slice";
+import { userReducer } from "../features/users/states/user.slice";
+import { roleReducer } from "../features/roles/states/role.slice";
 import { toastReducer } from "../shared/states/toast.slice";
 
 export const store = configureStore({
@@ -11,6 +13,8 @@ export const store = configureStore({
         register: registerReducer,
         orders:orderReducer,
         products: productReducer,
+        users: userReducer,
+        roles: roleReducer,
         toasts: toastReducer
     }
 })

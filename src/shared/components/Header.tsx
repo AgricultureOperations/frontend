@@ -15,7 +15,9 @@ export const Header = ({ theme, toggleTheme }: Props) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const email = useAppSelector((state) => state.auth.email);
-    const displayName = getDisplayNameFromEmail(email);
+    const me = useAppSelector((state) => state.auth.me);
+    // GET /auth/me's name once it has loaded; until then (or if it fails) the email-derived name.
+    const displayName = me?.name?.trim() || getDisplayNameFromEmail(email);
     const initials = getInitials(displayName);
     const isDark = theme === "dark";
 
@@ -43,7 +45,10 @@ export const Header = ({ theme, toggleTheme }: Props) => {
                 {displayName && (
                     <div className={styles.userBadge}>
                         <span className={styles.avatar}>{initials}</span>
-                        <span className={styles.userName}>{displayName.toUpperCase()}</span>
+                        <span className={styles.userText}>
+                            <span className={styles.userName}>{displayName.toUpperCase()}</span>
+                            {me && <span className={styles.userRole}>{me.role.name}</span>}
+                        </span>
                     </div>
                 )}
                 <button

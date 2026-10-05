@@ -111,15 +111,27 @@
     background-color: var(--avatar-bg);
 }
 
+// Below tablet width the toolbar has no room for the name and role; the avatar's
+// initials remain, so identity is still visible without wrapping or overflow.
+.userText {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    @media (max-width: $bp-tablet) {
+        display: none;
+    }
+}
+
 .userName {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: var(--title);
     white-space: nowrap;
+}
 
-    // Below tablet width the toolbar has no room for the full name; the avatar's
-    // initials remain, so identity is still visible without wrapping or overflow.
-    @media (max-width: $bp-tablet) {
-        display: none;
-    }
+.userRole {
+    font-size: 11px;
+    color: var(--icon);
+    white-space: nowrap;
 }

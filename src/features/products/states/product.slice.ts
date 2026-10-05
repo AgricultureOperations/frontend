@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } from "@reduxjs/toolkit";
-import axios from "axios";
 import { getProductsApi } from "../apis/get-products.api";
 import { createProductApi } from "../apis/create-product.api";
 import { updateProductApi } from "../apis/update-product.api";
@@ -7,6 +6,7 @@ import { deleteProductApi } from "../apis/delete-product.api";
 import { Product } from "../interfaces/product.interface";
 import { PaginationMeta, ProductListQuery, ProductListResponse } from "../interfaces/product-list.interface";
 import { CreateProductRequest, UpdateProductRequest } from "../interfaces/product.request";
+import { getApiErrorMessage } from "../../../shared/utils/apiError";
 
 export const PRODUCTS_PAGE_SIZE = 10;
 
@@ -27,10 +27,8 @@ export const initialProductState: ProductState = {
     error: null,
 };
 
-const toMessage = (error: unknown): string => {
-    if (axios.isAxiosError(error)) return error.response?.data?.message || "Something went wrong";
-    return error instanceof Error && error.message ? error.message : "Something went wrong";
-};
+// 403 (RBAC Phase 2) becomes the shared "no permission" message; the page shows it as a toast.
+const toMessage = (error: unknown): string => getApiErrorMessage(error);
 
 export const fetchProductsThunk = createAsyncThunk<ProductListResponse, ProductListQuery, { rejectValue: string }>(
     "api/products/list",

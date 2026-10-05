@@ -7,9 +7,9 @@
 | `login-light-desktop.png`, `login-light-mobile.png` | default (light) |
 | `login-dark-desktop.png`, `login-dark-mobile.png` | after clicking "Switch to dark mode" |
 
-`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders`, `/products`, `/users` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…`, `products-…`, `users-…` and `maintainers-…` likewise. A separate test clicks the sidebar `Products` item over seeded data (`fixtures/product-service.ts`) and saves `sidebar-products-active.png` / `sidebar-products-active-dark.png` (1440x900, viewport).
+`visual-regression-dashboard.spec.ts` does the same for the real routes behind the authenticated app shell (`AppLayout` + `Header` + `Sidebar`): `/dashboard`, `/orders`, `/products`, `/users`, `/roles` and `/maintainers` (`Orders` is the sidebar item that replaced "Solicitudes" - there is no `/dashboard/solicitudes` route in this app). It uses `fullPage: true` and `maxDiffPixelRatio: 0.02` (looser than the login spec's default, since these pages have more surface area). Baselines: `dashboard-{light,dark}-{desktop,mobile}.png`, `orders-…`, `products-…`, `users-…`, `roles-…` and `maintainers-…` likewise. A separate test clicks the sidebar `Products` item over seeded data (`fixtures/product-service.ts`) and saves `sidebar-products-active.png` / `sidebar-products-active-dark.png` (1440x900, viewport).
 
-Both specs fake a signed-in session instead of exercising the real login form: `tests/fixtures/auth.ts` seeds `localStorage.token`/`localStorage.email` before each test (this is enough for `ProtectedRoute`, which only checks that a token string exists - see `architecture.md`) and stubs every `/api/v1/**` call to `200 []`, so a real backend can't 401 the fake token and bounce the test to `/login` via the app's 401 interceptor.
+Both specs fake a signed-in session instead of exercising the real login form: `tests/fixtures/auth.ts` seeds `localStorage.token`/`localStorage.email` before each test and stubs every `/api/v1/**` call to `200 []`, so a real backend can't 401 the fake token and bounce the test to `/login` via the app's 401 interceptor. On top of that it registers `fixtures/auth-service.ts` (see below) signed in as the seeded **admin**, because `/auth/me` decides which sidebar items and permission-guarded routes render.
 
 `app-layout.spec.ts` covers the same shell's *behavior* (header content, sidebar routing, the theme toggle's `data-theme` attribute, the orders empty state) rather than pixels - keep new pixel assertions in the `visual-regression-*` files and new behavioral assertions there.
 
@@ -38,6 +38,23 @@ E2E_PORT=5174 npx playwright test tests/products-maintainer.spec.ts -g "visual" 
 - Match product-service URLs with `isProductServiceUrl`. The glob `**/api/v1/products**` does **not** match `/api/v1/products/<id>`, so a PATCH or DELETE would fall through to the catch-all `[]` and appear to succeed.
 
 These run separately from the Vitest unit tests (`npm test`), which ignore `tests/`.
+
+## auth-service mock and the RBAC specs
+
+`fixtures/auth-service.ts` is a **stateful in-browser mock** of auth-service's `GET /api/v1/auth/me`, `/user` (search, `roleId`, `isActive`, `page`, `pageSize`), `/roles`, `/permissions` and their mutations. It seeds 12 users (sorted by name; `Edward Cruz` = the signed-in user = `FAKE_EMAIL`), the system roles `admin`/`operator`/`viewer` plus a custom `field_supervisor` with no users, and a 4 × 4 permission matrix. It applies auth-service's guardrails (409 for the last active admin, system roles, roles with users, and reducing admin's permissions), records every request in `api.requests`, and `api.failNext(method, pathRegex, status, message)` makes the next matching call fail (403/409 paths).
+
+- `mockAuthService(page, { currentRole: 'viewer' | 'operator' })` signs in with another role. It overrides the default admin mock, since Playwright tries routes in reverse registration order.
+- Match its URLs with `isAuthServiceUrl`. `/api/v1/auth/login` and `/register` are deliberately not matched.
+
+| Spec | Checks |
+|---|---|
+| `users-maintainer.spec.ts` | columns, name-sorted first page, pagination, own-row guard; debounced search in `?q=` and "Limpiar filtros"; status/role filters, page size and page in the URL (survive a reload); create drawer fields, validation and disabled submit; create → edit → inline role change → deactivate (with confirmation) → delete with request bodies; a 409 reverts the inline role select; a 403 shows a toast and keeps the session. Screenshots `users-maintainer-list.png`, `create-user-drawer{,-dark}.png` |
+| `roles-maintainer.spec.ts` | matrix opens the first non-admin role, checked cells, indeterminate row, counter; cell/row toggles and the `PUT` body; search + bulk buttons on visible rows; unsaved-changes dialog on role switch; admin locked; create role with auto identifier (and manual override, invalid key); delete guards and deleting a free custom role; edit modal. Screenshots `roles-matrix{,-dark}.png`, `roles-manage.png` |
+| `rbac-gating.spec.ts` | viewer: sidebar without Users/Roles, role in the header, `/users` and `/roles` show "No access" without logging out, Products read-only; operator: Products create/edit but no delete |
+
+```bash
+E2E_PORT=5174 npx playwright test tests/users-maintainer.spec.ts tests/roles-maintainer.spec.ts tests/rbac-gating.spec.ts
+```
 
 ## First-time setup
 

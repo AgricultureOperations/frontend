@@ -1,18 +1,42 @@
 @use "../../../variables" as *;
 
+// Reference: Admisiones "Asesores" page. Title block + primary action, then one card holding the
+// list header (icon tile, title, filters), the search box, the table and the pagination footer.
 .page {
     --title: #{$neutral-800};
     --subtitle: #{$neutral-500};
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+    --icon-tile-from: #{$primary-600};
+    --icon-tile-to: #{$primary-700};
+    --control-bg: #{$neutral-100};
+    --search-bg: #{$surface-muted};
+    --control-text: #{$neutral-650};
+    --placeholder: #{$neutral-400};
 
     [data-theme='dark'] & {
         --title: #{$neutral-100};
         --subtitle: #{$neutral-400};
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+        --control-bg: transparent;
+        --search-bg: #{$dark-surface};
+        --control-text: #{$dark-text-label};
+        --placeholder: #{$neutral-600};
     }
 
     display: flex;
     flex-direction: column;
-    gap: $gap-lg;
+    gap: 28px;
     text-align: left;
+}
+
+.headerRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $gap-md;
+    flex-wrap: wrap;
 }
 
 .titleGroup {
@@ -29,9 +53,7 @@
     color: var(--title);
 }
 
-// Reference: 14px, #6B7280 (= $neutral-500), 4px below the title.
-// text-align is explicit because global.scss's `p { text-align: center }` rule
-// targets this <p> tag directly, which wins over the .page ancestor's alignment.
+// text-align is explicit because global.scss's `p { text-align: center }` targets <p> directly.
 .subtitle {
     margin: 0;
     font-size: $font-size-sm;
@@ -40,10 +62,175 @@
     text-align: left;
 }
 
-// The list has no component styles of its own; without this it inherits body's `color: #fff`
-// and is unreadable on the light shell.
-.page ul {
+// Reference: 40px tall, radius 12, 600 weight, tinted primary shadow.
+.primaryAction {
+    height: 40px;
+    font-weight: $font-weight-semibold;
+    border-radius: $radius-md;
+    box-shadow: 0 4px 6px -1px rgba($primary-700, 0.2), 0 2px 4px -2px rgba($primary-700, 0.2);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $gap-md;
+    flex-wrap: wrap;
+    padding: 24px 24px 0;
+
+    @media (max-width: $bp-tablet) {
+        padding: 16px 16px 0;
+    }
+}
+
+.cardHeading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cardIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    font-size: 18px;
+    color: $neutral-100;
+    background: linear-gradient(135deg, var(--icon-tile-from), var(--icon-tile-to));
+    border-radius: $radius-md;
+    box-shadow: 0 4px 6px -1px rgba($primary-700, 0.25);
+}
+
+.cardTitle {
     margin: 0;
-    padding-left: 20px;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: $font-weight-bold;
     color: var(--title);
+    text-align: left;
+}
+
+.cardSubtitle {
+    margin: 0;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: var(--subtitle);
+    text-align: left;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    // Phones: the selects share the row instead of sizing to their longest option.
+    @media (max-width: $bp-tablet) {
+        width: 100%;
+    }
+}
+
+.filterSelect {
+    height: 42px;
+    min-width: 180px;
+    padding: 0 38px 0 12px;
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    color: var(--control-text);
+    background-color: var(--control-bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    border: 1px solid var(--border);
+    border-radius: $radius-md;
+    appearance: none;
+    cursor: pointer;
+
+    [data-theme='dark'] & {
+        color-scheme: dark;
+    }
+
+    &:focus-visible {
+        outline: none;
+        border-color: $primary-600;
+        box-shadow: 0 0 0 3px rgba($primary-600, 0.2);
+    }
+
+    @media (max-width: $bp-tablet) {
+        flex: 1 1 140px;
+        min-width: 0;
+    }
+}
+
+.searchRow {
+    padding: 20px 24px 16px;
+
+    @media (max-width: $bp-tablet) {
+        padding: 16px;
+    }
+}
+
+.searchBox {
+    position: relative;
+}
+
+.searchIcon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    font-size: 16px;
+    color: var(--placeholder);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 14px 0 40px;
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    color: var(--control-text);
+    background-color: var(--search-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-md;
+
+    &::placeholder {
+        color: var(--placeholder);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $primary-600;
+        box-shadow: 0 0 0 3px rgba($primary-600, 0.2);
+    }
+}
+
+// Empty/error states sit inside the card, so their own dashed card is dropped.
+.stateWrap {
+    padding: 8px 24px 24px;
+
+    > div {
+        border: none;
+        background: none;
+    }
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }

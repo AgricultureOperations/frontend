@@ -1,0 +1,302 @@
+@use "../../../variables" as *;
+
+// Reference: Admisiones "Administrar roles" (one card: "Nuevo rol" inline form, then a 3-column
+// grid of role cards showing the name and the mono identifier).
+.panel {
+    // Form.module.scss controls read these from .section; the inline form has no FormSection.
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --label: #{$neutral-700};
+    --control-bg: #{$surface-muted};
+    --control-border: #{$neutral-200};
+    --control-text: #{$neutral-800};
+    --placeholder: #{$neutral-400};
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+    --role-bg: #{$neutral-100};
+    --role-hover: #{$surface-muted};
+    --accent: #{$primary-700};
+    --badge-bg: #{rgba($primary-700, 0.1)};
+    --icon: #{$neutral-400};
+    --icon-hover-bg: #{$surface-muted};
+
+    [data-theme='dark'] & {
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --label: #{$dark-text-label};
+        --control-bg: #{$dark-surface};
+        --control-border: #{$dark-border};
+        --control-text: #{$neutral-100};
+        --placeholder: #{$neutral-600};
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+        --role-bg: transparent;
+        --role-hover: #{$dark-surface};
+        --accent: #{$dark-link};
+        --badge-bg: #{rgba($dark-link, 0.14)};
+        --icon: #{$neutral-400};
+        --icon-hover-bg: #{$dark-surface-hover};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 24px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+
+    @media (max-width: $bp-tablet) {
+        padding: 16px;
+    }
+}
+
+.createForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+}
+
+.sectionIcon {
+    color: var(--accent);
+}
+
+.sectionDescription {
+    margin: 0;
+    max-width: 640px;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--muted);
+    text-align: left;
+}
+
+.createGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.4fr) auto;
+    align-items: start;
+    gap: 12px;
+
+    input {
+        height: 42px;
+        font-size: $font-size-sm;
+    }
+
+    @media (max-width: $bp-desktop) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    @media (max-width: $bp-tablet) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+// Lines the button up with the inputs (label row = 16px + 6px gap).
+.createAction {
+    padding-top: 22px;
+
+    button {
+        height: 42px;
+        border-radius: $radius-md;
+        font-weight: $font-weight-semibold;
+    }
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
+
+.existing {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.existingTitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: var(--title);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+
+    @media (max-width: $bp-desktop) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: $bp-tablet) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.roleCard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    background-color: var(--role-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-md;
+    transition: $transition;
+
+    &:hover {
+        background-color: var(--role-hover);
+    }
+}
+
+.roleCardInactive {
+    opacity: 0.7;
+}
+
+.roleCardTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.roleHeading {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.roleName {
+    font-size: 15px;
+    font-weight: $font-weight-medium;
+    color: var(--title);
+}
+
+.roleKey {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: $font-size-xs;
+    color: var(--muted);
+}
+
+.roleDescription {
+    margin: 0;
+    font-size: $font-size-xs;
+    line-height: $line-height-xs;
+    color: var(--muted);
+    text-align: left;
+}
+
+.roleMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.userCount {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-xs;
+    color: var(--muted);
+}
+
+.systemBadge,
+.inactiveBadge {
+    padding: 2px 8px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: $font-weight-semibold;
+    border-radius: 999px;
+}
+
+.systemBadge {
+    color: var(--accent);
+    background-color: var(--badge-bg);
+}
+
+.inactiveBadge {
+    color: $status-warning-text;
+    background-color: $warning-100;
+}
+
+.roleActions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 15px;
+    color: var(--icon);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover:not(:disabled) {
+        color: var(--accent);
+        background-color: var(--icon-hover-bg);
+    }
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+    }
+}
+
+.danger:hover:not(:disabled) {
+    color: $status-critical;
+}
+
+// RoleEditModal
+.editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.hintText {
+    margin: 0;
+    font-size: $font-size-xs;
+    color: $neutral-500;
+    text-align: left;
+}
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.08);
+    border: 1px solid rgba($status-critical, 0.25);
+    border-radius: $radius-sm;
+}

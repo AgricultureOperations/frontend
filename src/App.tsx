@@ -7,6 +7,7 @@ import { DashboardPage } from './features/dashboard';
 import { OrdersPage } from './features/orders';
 import { MaintainersPage } from './features/maintainers';
 import { ProductsMaintainerPage } from './features/products';
+import { RolesPage } from './features/roles';
 import { AppLayout } from './shared/components/AppLayout';
 
 function App() {
@@ -24,9 +25,10 @@ function App() {
           }
         >
           <Route path='/dashboard' element={<DashboardPage />} />
-          <Route path='/users' element={<UsersPage />} />
-          <Route path='/orders' element={<OrdersPage />} />
-          <Route path='/products' element={<ProductsMaintainerPage />} />
+          <Route path='/users' element={<ProtectedRoute permission="users:view"><UsersPage /></ProtectedRoute>} />
+          <Route path='/roles' element={<ProtectedRoute permission="roles:view"><RolesPage /></ProtectedRoute>} />
+          <Route path='/orders' element={<ProtectedRoute permission="orders:view"><OrdersPage /></ProtectedRoute>} />
+          <Route path='/products' element={<ProtectedRoute permission="products:view"><ProductsMaintainerPage /></ProtectedRoute>} />
           <Route path='/maintainers' element={<MaintainersPage />} />
           {/* Products used to live under Maintainers; keep old links working. */}
           <Route path='/maintainers/products' element={<Navigate to="/products" replace />} />

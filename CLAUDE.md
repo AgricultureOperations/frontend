@@ -38,15 +38,16 @@ docker build -t agriops-web . && docker run -p 5173:8080 agriops-web
 
 | Path | Responsibility |
 |---|---|
-| `src/api/` | `createAxiosApi` factory plus one instance per backend (`bitacoraApi`, `orderApi`, `productApi`). Interceptors add `Bearer <token>` from `localStorage`. On a 401 (except login) they clear the token and redirect to `/login`. |
+| `src/api/` | `createAxiosApi` factory plus one instance per backend (`bitacoraApi`, `orderApi`, `productApi`). Interceptors add `Bearer <token>` from `localStorage`. On a 401 (except login) they clear the token and redirect to `/login`. A 403 is left to the caller (see RBAC below). |
 | `src/features/<domain>/apis/` | Endpoint calls using an instance (paths include `/api/v1/...`). |
-| `src/features/<domain>/states/` | RTK slices and `createAsyncThunk`s. Axios errors map to `rejectWithValue(response.data.message \|\| "Something went wrong")`. |
+| `src/features/<domain>/states/` | RTK slices and `createAsyncThunk`s. Axios errors map to `rejectWithValue(getApiErrorMessage(error))` (`shared/utils/apiError.ts`): the backend `message`, or the shared "no permission" text for a 403. |
 | `src/features/<domain>/hooks/` | Business logic consumed by pages (`useLogin`, `useOrdersTable`, …). |
 | `src/features/<domain>/components/`, `pages/` | Presentational UI. `pages/index.ts` re-exports default pages as named exports, and the feature's `index.ts` exposes only pages. |
 | `src/features/<domain>/interfaces/`, `validations/` | Request/response types and Yup schemas. |
-| `src/store/` | `store.ts` registers every slice (`auth`, `register`, `orders`, `products`, `toasts`). Always use the typed `useAppDispatch`/`useAppSelector` from `hooks.ts`. |
-| `src/routes/` | `ProtectedRoute` checks `localStorage.token` (not Redux). Routes are declared in `App.tsx`. |
-| `src/shared/components/` | Reusable UI: `Modal`, `ConfirmDialog`, `Button`, `ToastViewport`, `EmptyState` (optional `action`), `form/` (`FormSection`, `FormField` + `fieldA11y`, `SegmentedControl`, `Switch`), Spinner, SharedError, CustomInput, … |
+| `src/store/` | `store.ts` registers every slice (`auth`, `register`, `orders`, `products`, `users`, `roles`, `toasts`). Always use the typed `useAppDispatch`/`useAppSelector` from `hooks.ts`. |
+| `src/routes/` | `ProtectedRoute` checks `localStorage.token` (not Redux) and, with a `permission` prop, the `/auth/me` permissions (shows `NoAccess` inside the shell, never logs out). Routes are declared in `App.tsx`. |
+| `src/shared/components/` | Reusable UI: `Modal`, `Drawer` (right-side panel), `ConfirmDialog` (`confirmVariant`), `Button`, `Pagination` (numbered, page size), `Can`, `NoAccess`, `PageLoader`, `ToastViewport`, `EmptyState` (optional `action`), `form/` (`FormSection`, `FormField` + `fieldA11y`, `SegmentedControl`, `Switch`), Spinner, SharedError, CustomInput, … |
+| `src/shared/hooks/`, `src/shared/utils/` | `usePermission` (`can(resource, action)`, `canCode`, `ready`, `refresh`), `useTheme`; `permissions.ts`, `apiError.ts`, `pagination.ts`, `formatUserDisplay.ts`. |
 | `src/shared/states/` | UI-only slices. `toast.slice.ts`: `showToast(type, message)` / `dismissToast(id)`. |
 | `src/styles/` | SCSS tokens (`_variables.scss`, colors named by role + intensity, e.g. `$error-500`), `_mixins.scss`, globals. CSS modules go in `src/styles/features/<domain>/...`, mirroring the feature path, not next to the component. |
 | `test/` | Vitest specs, mirroring `src/` paths (e.g. `test/api/`). |
@@ -63,7 +64,7 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
 ├─ <aside> Sidebar     80px wide, height 100% (top of the window to the bottom), border-right
 │   ├─ .top
 │   │   ├─ .brand      64px tall (same as Header), leaf icon, border-bottom
-│   │   └─ <nav>       Inicio, Orders, Products, Users
+│   │   └─ <nav>       Inicio, Orders, Products, Users, Roles (each hidden without its `view` permission)
 │   └─ <nav> .bottom   Maintainers, pinned to the bottom
 └─ .column             flex 1, flex COLUMN, overflow hidden
     ├─ <header> Header 64px tall, border-bottom, 24px side padding
@@ -75,8 +76,8 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
 
 ### Header (`Header.tsx`)
 - **Left:** the app title `AgriOPS` only (`font-medium`, 20px). The logo lives at the top of the Sidebar, not here.
-- **Right, in this order:** theme toggle (Dark/Light), notifications bell, user badge (initials avatar + uppercase name), logout button.
-- The user name is **derived from `auth.email`** by `getDisplayNameFromEmail` (for example `edward.cruz@…` → `EDWARD CRUZ`). Never hardcode it. auth-service issues no name field, and the JWT must not be decoded for UI info (see `architecture.md`).
+- **Right, in this order:** theme toggle (Dark/Light), notifications bell, user badge (initials avatar + uppercase name + role name below it), logout button.
+- The user name and role come from **`GET /auth/me`** (`auth.me.name`, `auth.me.role.name`). Until it loads, or if it fails, the name falls back to `getDisplayNameFromEmail(auth.email)` (for example `edward.cruz@…` → `EDWARD CRUZ`). Never hardcode it, and never decode the JWT for UI info (see `architecture.md`).
 - Icon-only buttons need an `aria-label`. The labels are `Switch to dark mode` / `Switch to light mode`, `Notifications` and `Log out`. The Playwright specs find the toggle and logout buttons by these names, so renaming one breaks the tests.
 - The notifications bell is visual only, with no backend or handler yet.
 
@@ -90,17 +91,19 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
   | `Inicio` | `/dashboard` | top | KPIs |
   | `Orders` | `/orders` | top | replaces the reference design's "Solicitudes"; there is no `/solicitudes` route |
   | `Products` | `/products` | top, right below Orders | Products maintainer (`FiBox`; `FiPackage` is taken by Orders). `/maintainers/products` redirects here |
-  | `Users` | `/users` | top | |
+  | `Users` | `/users` | top | Users maintainer (Admisiones "Asesores" design). Needs `users:view` |
+  | `Roles` | `/roles` | top, right below Users | Roles & Permissions maintainer (Admisiones "Permisos del panel" design, `FiShield`). Needs `roles:view` |
   | `Maintainers` | `/maintainers` | pinned to the bottom | hub for general configuration and secondary master data: one card per entry in its `sections` array. Empty today, so it shows the `No maintainers yet` placeholder |
 
 - Nav labels use English resource names. The exception is `Inicio`.
+- Items with a `permission` in `navItems` are hidden until `/auth/me` has loaded and grants it. `Inicio` and `Maintainers` are always shown.
 - Core, frequently used master data (currently Products) gets a top-level sidebar item and a flat route named after the backend resource (`/products` ↔ `/api/v1/products`). Secondary or rarely edited master data goes into the `Maintainers` hub as a card linking to `/maintainers/<resource>`, so the sidebar doesn't keep growing. Ask before adding another top-level item.
 
 ### Pages
 - **Dashboard:** greeting header `Hola, {USER_NAME}` (display name, uppercased) with the subtitle `Panel de control AgriOPS`, followed by a row of `StatCard`s.
 - **List pages** (such as `Orders`): title + Spanish subtitle, then a table.
 - **Tables:** headers are uppercase, small and muted (`text-transform: uppercase`, `var(--header-text)`). Status columns render a badge component (`OrderStatusBadge`), not plain text. Only terminal states take semantic colors (Pending → warning, Delivered → good, Cancelled → critical). In-progress states stay neutral. An empty list renders `EmptyState`, not an empty table.
-- **Filter bar (planned, not built):** a horizontal filter bar above list tables with a `FILTROS APLICADOS:` indicator showing the active filters. Filter state belongs in the page's hook, not in Redux (see `architecture.md` → State management). The older `SearchBar.tsx` (used only by `UsersPage`) uses a global class name instead of a CSS module and has no dark-mode styles. Don't build the filter bar on it.
+- **Filter bar (planned, not built):** a horizontal filter bar above list tables with a `FILTROS APLICADOS:` indicator showing the active filters. Filter state belongs in the page's hook, not in Redux (see `architecture.md` → State management). The Users maintainer's toolbar (search + selects, state in the URL) is the pattern to follow.
 
 ### Maintainers and the Products maintainer
 - `/maintainers` (`features/maintainers`) is a hub. Its typed `sections` array renders one card per entry, each linking to `/maintainers/<resource>`. It renders the `EmptyState` placeholder while the array is empty. Add an entry there and a route in `App.tsx` for a new secondary maintainer.
@@ -114,6 +117,29 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
   | components | `ProductsTable` (TanStack, `th scope="col"`), `ProductStatusBadge`, `ProductsPagination`, `ProductFormModal`, `DeleteProductDialog` |
   | interfaces / utils / validations | `product.interface.ts` mirrors product-service's `ProductResponseDto`. `product-options.ts` holds labels and units (`bag` = saco, `t` = ton, `qq`). `product-form.mapper.ts` converts form ↔ request. `product.validation.ts` mirrors the backend rules for UX only |
 - Table columns: SKU, Name, Category, Type, Unit, Selling Price, Min Stock, Status, then the Edit/Delete icon buttons (`aria-label` `Editar <SKU>` / `Eliminar <SKU>`). The list is paginated 10 per page, newest first. Loading, empty (`No products yet`) and error (`Reintentar`) states use `EmptyState` or the loading row, never an empty table.
+
+### RBAC in the UI (Phase 3)
+- **Source of truth:** `GET /api/v1/auth/me` → `auth.me` (`{ …user, role, permissions: string[] }`), with `auth.meStatus` `idle → loading → ready | error`. `useSession` (called by `AppLayout` and `ProtectedRoute`) loads it once per session; `fetchMeThunk` has a `condition` so concurrent callers make one request. Login and logout reset it. It is never persisted.
+- **Checks:** `usePermission().can("users", "edit")` / `canCode("users:edit")` and `<Can permission="users:edit">`. Hiding is UX only: every endpoint enforces its permission and answers 403.
+- **Routes:** `<ProtectedRoute permission="users:view">` shows `PageLoader` while `/auth/me` loads, `NoAccess` (with "Ir al inicio") without the permission, and a retry when `/auth/me` failed. `/users`, `/roles`, `/orders` and `/products` are guarded; `/dashboard` and `/maintainers` aren't.
+- **Status codes:** 401 still logs out (interceptor). A 403 becomes `FORBIDDEN_MESSAGE` ("No tienes permiso para realizar esta acción") through `getApiErrorMessage` and is shown as a toast by the hook; the user stays on the page. 409 guardrails (last admin, system roles, roles with users) show the backend message.
+- **Products** hides `Nuevo Producto`, the edit button and the delete button (and the Actions column when both are gone) by `products:create|edit|delete`.
+
+### Users maintainer (`/users`, reference: Admisiones "Asesores")
+- Title `Users` + primary `Nuevo usuario` (`users:create`), then one card: icon tile + "Listado de usuarios", role and status selects, a search box, the table and `Pagination`.
+- **Filters and paging live in the URL** (`?q&status&role&page&size`, defaults omitted) via `useSearchParams` in `useUsersMaintainer`, so reloads and shared links keep the list. Search is debounced 300 ms and replaces the history entry. Page sizes 5/10/20/50.
+- Columns: Usuario (initials avatar, uppercase name, `Tú` on your own row), Correo, Estado (`UserStatusBadge`), Rol (`UserRoleSelect`: shield + inline select "Name (key)"), Acciones (`Editar` blue pill, `Inhabilitar`/`Habilitar` amber/green pill, trash icon). Actions are left-aligned. Your own row can't change its role or status or delete itself.
+- The inline role change is **optimistic**: `updateUserRoleThunk` sets the role on `pending` and restores `previous` on rejection (e.g. 409 last admin), with a toast. `roleChangePending` disables that row's select meanwhile.
+- `UserFormDrawer` (shared `Drawer`, 448 px): create = Nombre*, Correo*, Contraseña* (min 8, show/hide), Rol (defaults to `viewer`); edit = email read-only ("El correo no puede ser editado"). The submit stays disabled until the Yup schema is valid. Saving an edit sends `PATCH /user/:id {name}` and, if changed, `PATCH /user/:id/role`.
+- **Deactivating asks first** (`UserStatusDialog`); the reference doesn't, and deactivation also ends the user's session. Delete uses `DeleteUserDialog`.
+- Role options come from `GET /roles` when the user has `roles:view`, otherwise from the roles seen on the loaded page (`deriveRoleOptions`).
+- States: skeleton rows on first load, "No users yet", "No hay usuarios para este filtro" + `Limpiar filtros`, and an error state with `Reintentar`. Below tablet width the table scrolls inside the card, like the reference.
+
+### Roles & Permissions maintainer (`/roles`, reference: Admisiones "Permisos del panel")
+- Two tabs (`role="tablist"`): **Roles y permisos** and **Administrar roles**. The reference's "Árbol completo" is left out: permissions are flat resource × action pairs. `useRolesPage` owns both tabs' state, so switching tabs keeps the matrix draft.
+- **Matrix** (`PermissionMatrixPanel`, logic in `utils/permission-matrix.ts`): role select (opens the first non-admin role), `Marcar todos`/`Desmarcar todos` (visible rows only), search by name/key/description/code, rows = resources (row checkbox with indeterminate state), columns = actions (`Ver/Crear/Editar/Eliminar`) with the code chip under each checkbox, and a sticky footer "N de M permisos seleccionados" + `Guardar cambios` (`PUT /roles/:id/permissions` with the full set). The draft is keyed by role; switching roles with unsaved changes opens `UnsavedChangesDialog`, and closing the tab triggers `beforeunload`. There is no in-app navigation guard (`BrowserRouter` has no `useBlocker`).
+- `admin` is shown fully checked and locked (auth-service refuses to reduce it). Saving warns that the role's users are signed out; saving your own role re-reads `/auth/me`, which 401s and sends you to `/login`.
+- **Administrar roles**: inline "Nuevo rol" form (Nombre visible*, Identificador* auto-slugged from the name until edited by hand, `^[a-z][a-z0-9_]{1,49}$` like auth-service, Descripción) and a 3-column grid of `RoleCard`s (name, mono key, description, user count, `Sistema`/`Inactivo` badges, edit and delete icons). Delete is disabled with a reason for system roles and roles with users. `RoleEditModal` edits name, description and the active flag; the key is read-only.
 
 ### Modal pattern (reference: Admisiones "Nueva solicitud en borrador")
 - Use `shared/components/Modal`, never a bespoke overlay. The backdrop is `rgba(0,0,0,.5)` + `blur(4px)` (Tailwind `bg-black/50 backdrop-blur-sm`). The header has a small uppercase eyebrow (`Alta manual`, or `Edición · <SKU>`), the title, a subtitle and an X button (`aria-label="Cerrar"`). The body scrolls. The footer holds an outline `Cancelar` and a primary action.
@@ -129,11 +155,12 @@ The authenticated app shell follows the Admisiones Online back-office pattern. E
 - Each component module declares CSS custom properties for light mode and overrides them under `[data-theme='dark'] & { … }`. Rules then use only `var(--…)`. Follow this pattern for every new component so both themes work without duplicate rules.
 
 ### Testing
-- `app-layout.spec.ts` covers the shell's geometry (full-height sidebar, header against it), the brand placement, the sidebar item order (`Inicio, Orders, Products, Users` + `Maintainers`), routing (`/orders`, `/products` with its table and `aria-current`, `/maintainers`, and the `/maintainers/products` → `/products` redirect), and the `data-theme` toggle.
+- `app-layout.spec.ts` covers the shell's geometry (full-height sidebar, header against it), the brand placement, the header name + role from `/auth/me`, the sidebar item order (`Inicio, Orders, Products, Users, Roles` + `Maintainers`), routing (`/orders`, `/products` with its table and `aria-current`, `/users`, `/roles`, `/maintainers`, and the `/maintainers/products` → `/products` redirect), and the `data-theme` toggle.
 - Playwright E2E tests live in `tests/`, separate from the Vitest specs in `test/`. Read `tests/README.md` before changing them.
-- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users`, `/maintainers` and `/products` (empty state) in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. It also has `sidebar-products-active{,-dark}.png`: it clicks the sidebar `Products` item, then shoots the seeded table with that item active (1440×900). `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
+- `visual-regression-*.spec.ts` screenshots `/login`, `/dashboard`, `/orders`, `/users` (seeded), `/roles`, `/maintainers` and `/products` (empty state) in **both Light and Dark mode** (it clicks the toggle) at desktop and mobile widths. It also has `sidebar-products-active{,-dark}.png`: it clicks the sidebar `Products` item, then shoots the seeded table with that item active (1440×900). `app-layout.spec.ts` covers shell behavior: header content, sidebar routing and `data-theme`.
 - A new shell route needs light and dark baselines in the visual spec plus a sidebar-routing assertion in `app-layout.spec.ts`.
 - `products-maintainer.spec.ts` drives the Products maintainer against `tests/fixtures/product-service.ts`, a stateful in-browser mock of `/api/v1/products` (12 seeded products, fixed timestamps, newest-first pagination, 409 on duplicate SKU, and `failLists(status)` for error states). It covers: navigation through the sidebar `Products` item to `/products`; every modal input and section; client validation; create → edit → delete, including checks on the request bodies; the duplicate-SKU error; empty and error states. Screenshots: `products-maintainer-list.png`, `create-product-modal.png` and `create-product-modal-dark.png` (1440×900).
+- `users-maintainer.spec.ts`, `roles-maintainer.spec.ts` and `rbac-gating.spec.ts` run against `tests/fixtures/auth-service.ts`, a stateful mock of `/auth/me`, `/user`, `/roles` and `/permissions` with auth-service's guardrails (409 last admin, system roles, roles with users, admin permissions) and `failNext(method, path, status, message)` for 403/409 paths. `fixtures/auth.ts` registers it by default (signed in as the seeded admin); call `mockAuthService(page, { currentRole: 'viewer' | 'operator' })` to override. See `tests/README.md` for the full list.
 - `fixtures/auth.ts` stubs product-service with an empty page (`{ data: [], meta }`), because the catch-all `[]` is not a valid paginated response. Match product-service URLs with `isProductServiceUrl`, not a glob: `**/api/v1/products**` does not cross `/`, so `/products/<id>` would silently fall through to the catch-all.
 - Playwright only rewrites a baseline that fails comparison. When a page is redesigned but the diff stays under `maxDiffPixelRatio` (0.02 for full-page shots), delete the old PNG and regenerate it, so the baseline shows the current design.
 - After an intended style or token change, check the diff report, then run `npm run test:e2e:update` and commit the PNGs with the change. Never update baselines to hide an unexplained diff.

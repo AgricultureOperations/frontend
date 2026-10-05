@@ -1,0 +1,41 @@
+@use "../../variables" as *;
+
+.loading {
+    --muted: #{$neutral-500};
+    --accent: #{$primary-700};
+    --card-bg: #{$neutral-100};
+    --border: #{$neutral-200};
+
+    [data-theme='dark'] & {
+        --muted: #{$neutral-400};
+        --accent: #{$dark-link};
+        --card-bg: #{$dark-card};
+        --border: #{$dark-border};
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: $gap-xl;
+    font-size: $font-size-sm;
+    color: var(--muted);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

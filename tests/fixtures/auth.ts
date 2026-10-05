@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test';
 import { isProductServiceUrl } from './product-service';
+import { mockAuthService } from './auth-service';
 
 // ProtectedRoute only checks that localStorage.token is a non-empty string (see
 // architecture.md: "navigation UX, not security"), so specs fake a session instead of
@@ -33,6 +34,10 @@ export const test = base.extend<{ fakeSession: void }>({
           body: JSON.stringify({ data: [], meta: { page: 1, limit: 10, total: 0, totalPages: 0 } }),
         }),
       );
+      // auth-service (GET /auth/me, /user, /roles, /permissions): signed in as the seeded admin, so every
+      // permission-gated item is visible. Specs that need the mock's state or another role call
+      // mockAuthService(page, …) again, which overrides this one.
+      await mockAuthService(page);
 
       await use();
     },

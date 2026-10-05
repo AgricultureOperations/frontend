@@ -1,0 +1,98 @@
+@use "../../../variables" as *;
+
+// Reference: Admisiones "Permisos del panel" (title, subtitle, underlined icon tabs).
+.page {
+    --title: #{$neutral-800};
+    --subtitle: #{$neutral-500};
+    --border: #{$neutral-200};
+    --tab-text: #{$neutral-500};
+    --tab-active: #{$primary-700};
+    --dirty: #{$status-warning};
+
+    [data-theme='dark'] & {
+        --title: #{$neutral-100};
+        --subtitle: #{$neutral-400};
+        --border: #{$dark-border};
+        --tab-text: #{$neutral-400};
+        --tab-active: #{$dark-link};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    text-align: left;
+}
+
+.titleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 640px;
+}
+
+.title {
+    margin: 0;
+    font-size: $font-size-2xl;
+    line-height: $line-height-2xl;
+    font-weight: $font-weight-bold;
+    color: var(--title);
+}
+
+.subtitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    line-height: $line-height-sm;
+    color: var(--subtitle);
+    text-align: left;
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: -1px;
+    padding: 12px 16px;
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: var(--tab-text);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: $transition;
+
+    &:hover {
+        color: var(--title);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: -2px;
+    }
+}
+
+.tabActive {
+    color: var(--tab-active);
+    border-bottom-color: var(--tab-active);
+
+    &:hover {
+        color: var(--tab-active);
+    }
+}
+
+.dirtyDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--dirty);
+}

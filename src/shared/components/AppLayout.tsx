@@ -4,9 +4,12 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { ToastViewport } from "./ToastViewport";
 import { useTheme } from "../hooks/useTheme";
+import { useSession } from "../../features/auth/hooks/useSession";
 
 export const AppLayout = () => {
     const { theme, toggleTheme } = useTheme();
+    // Loads /auth/me for the header badge, the sidebar and every permission check.
+    useSession();
 
     return (
         <div className={styles.layout} data-theme={theme}>

@@ -1,0 +1,94 @@
+@use "../../../variables" as *;
+
+// The drawer's fields sit directly in the panel (no FormSection card, as in the reference), so the
+// custom properties that Form.module.scss reads from .section are declared here instead.
+.fields {
+    --title: #{$neutral-800};
+    --muted: #{$neutral-500};
+    --label: #{$neutral-700};
+    --control-bg: #{$surface-muted};
+    --control-border: #{$neutral-200};
+    --control-text: #{$neutral-800};
+    --placeholder: #{$neutral-400};
+
+    [data-theme='dark'] & {
+        --title: #{$neutral-100};
+        --muted: #{$neutral-400};
+        --label: #{$dark-text-label};
+        --control-bg: #{$dark-surface};
+        --control-border: #{$dark-border};
+        --control-text: #{$neutral-100};
+        --placeholder: #{$neutral-600};
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    // Reference: 14px labels and 42px inputs with 14px text in the side panel (the modal's are 12px, 36px/13px).
+    label {
+        font-size: $font-size-sm;
+        line-height: $line-height-sm;
+    }
+
+    input,
+    select {
+        height: 42px;
+        font-size: $font-size-sm;
+    }
+
+    input[readonly],
+    select:disabled {
+        color: var(--muted);
+        cursor: not-allowed;
+    }
+}
+
+.passwordWrap {
+    position: relative;
+
+    input {
+        padding-right: 44px;
+    }
+}
+
+.passwordToggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 16px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    transform: translateY(-50%);
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+    }
+}
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 18px;
+    color: $status-critical;
+    background-color: rgba($status-critical, 0.08);
+    border: 1px solid rgba($status-critical, 0.25);
+    border-radius: $radius-sm;
+
+    svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+}

@@ -34,10 +34,11 @@ test.describe('app layout: structure', () => {
 });
 
 test.describe('app layout: header', () => {
-  test('shows the signed-in user name and a logout button', async ({ page }) => {
+  test('shows the signed-in user name and role (from GET /auth/me) and a logout button', async ({ page }) => {
     await page.goto('/dashboard');
 
     await expect(page.getByRole('banner').getByText('EDWARD CRUZ')).toBeVisible();
+    await expect(page.getByRole('banner').getByText('Administrator')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible();
   });
 
@@ -61,11 +62,11 @@ test.describe('app layout: sidebar navigation', () => {
     await expect(page.getByRole('heading', { name: 'Orders' })).toBeVisible();
   });
 
-  test('lists Inicio, Orders, Products and Users on top and pins Maintainers to the bottom', async ({ page }) => {
+  test('lists Inicio, Orders, Products, Users and Roles on top and pins Maintainers to the bottom', async ({ page }) => {
     await page.goto('/dashboard');
 
     const links = page.getByRole('complementary').getByRole('link');
-    await expect(links).toHaveText(['Inicio', 'Orders', 'Products', 'Users', 'Maintainers']);
+    await expect(links).toHaveText(['Inicio', 'Orders', 'Products', 'Users', 'Roles', 'Maintainers']);
 
     const sidebar = await page.getByRole('complementary').boundingBox();
     const maintainers = await page.getByRole('link', { name: 'Maintainers' }).boundingBox();
@@ -94,6 +95,21 @@ test.describe('app layout: sidebar navigation', () => {
     await expect(page.getByRole('row')).toHaveCount(11);
     await expect(sidebar.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
     await expect(sidebar.getByRole('link', { name: 'Maintainers' })).not.toHaveAttribute('aria-current', 'page');
+  });
+
+  test('routes to /users and /roles via the top "Users" and "Roles" items', async ({ page }) => {
+    await page.goto('/dashboard');
+    const sidebar = page.getByRole('complementary');
+
+    await sidebar.getByRole('link', { name: 'Users' }).click();
+    await expect(page).toHaveURL(/\/users$/);
+    await expect(page.getByRole('heading', { name: 'Users', level: 1 })).toBeVisible();
+    await expect(sidebar.getByRole('link', { name: 'Users' })).toHaveAttribute('aria-current', 'page');
+
+    await sidebar.getByRole('link', { name: 'Roles' }).click();
+    await expect(page).toHaveURL(/\/roles$/);
+    await expect(page.getByRole('heading', { name: 'Roles & Permissions', level: 1 })).toBeVisible();
+    await expect(sidebar.getByRole('link', { name: 'Roles' })).toHaveAttribute('aria-current', 'page');
   });
 
   test('redirects the old /maintainers/products URL to /products', async ({ page }) => {

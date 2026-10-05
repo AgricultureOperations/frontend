@@ -7,9 +7,11 @@ import { ProductFormModal } from "../components/ProductFormModal";
 import { ProductsPagination } from "../components/ProductsPagination";
 import { ProductsTable } from "../components/ProductsTable";
 import { useProductsMaintainer } from "../hooks/useProductsMaintainer";
+import { usePermission } from "../../../shared/hooks/usePermission";
 
 const ProductsMaintainerPage = () => {
     const m = useProductsMaintainer();
+    const { can } = usePermission();
     const firstLoad = m.loading && m.products.length === 0;
 
     let content;
@@ -40,7 +42,11 @@ const ProductsMaintainerPage = () => {
     } else {
         content = (
             <div className={styles.card} aria-busy={m.loading}>
-                <ProductsTable data={m.products} onEdit={m.openEdit} onDelete={m.askDelete} />
+                <ProductsTable
+                    data={m.products}
+                    onEdit={can("products", "edit") ? m.openEdit : undefined}
+                    onDelete={can("products", "delete") ? m.askDelete : undefined}
+                />
                 <ProductsPagination meta={m.meta} onPageChange={m.goToPage} />
             </div>
         );
@@ -53,7 +59,9 @@ const ProductsMaintainerPage = () => {
                     <h1 className={styles.title}>Products</h1>
                     <p className={styles.subtitle}>Catálogo de insumos, cosechas y equipos</p>
                 </div>
-                <Button icon={<FiPlus aria-hidden />} onClick={m.openCreate}>Nuevo Producto</Button>
+                {can("products", "create") && (
+                    <Button icon={<FiPlus aria-hidden />} onClick={m.openCreate}>Nuevo Producto</Button>
+                )}
             </div>
 
             {content}

@@ -1,0 +1,329 @@
+@use "../../../variables" as *;
+
+// Reference: Admisiones "Asesores" table, measured with getComputedStyle (header 11px/600 uppercase,
+// cells 14px on 69px rows, 14×20 padding, 32px action pills with radius 8).
+.scroll {
+    --border: #{$neutral-200};
+    --header-text: #{$neutral-500};
+    --row-text: #{$neutral-650};
+    --name-text: #{$neutral-800};
+    --row-hover: #{$surface-muted};
+    --avatar-bg: #{$primary-700};
+    --select-bg: #{$neutral-100};
+    --select-border: #{$neutral-200};
+    --role-icon: #{$primary-700};
+    --tag-bg: #{rgba($primary-700, 0.1)};
+    --tag-text: #{$primary-700};
+    --edit-bg: #{$primary-200};
+    --edit-text: #{$neutral-650};
+    --disable-bg: #{$warning-100};
+    --disable-text: #{$warning-700};
+    --enable-bg: #{$success-50};
+    --enable-text: #{$success-700};
+    --active-bg: #{$success-50};
+    --active-text: #{$success-700};
+    --active-ring: #{rgba($success-200, 0.5)};
+    --inactive-bg: #{$surface-muted};
+    --inactive-text: #{$neutral-500};
+    --inactive-ring: #{$neutral-200};
+    --icon: #{$neutral-400};
+    --icon-hover-bg: #{rgba($status-critical, 0.1)};
+    --skeleton: #{$neutral-200};
+
+    [data-theme='dark'] & {
+        --border: #{$dark-border};
+        --header-text: #{$neutral-400};
+        --row-text: #{$dark-text-label};
+        --name-text: #{$neutral-100};
+        --row-hover: #{$dark-surface};
+        --avatar-bg: #{$primary-600};
+        --select-bg: transparent;
+        --select-border: #{$dark-border};
+        --role-icon: #{$dark-link};
+        --tag-bg: #{rgba($dark-link, 0.14)};
+        --tag-text: #{$dark-link};
+        --edit-bg: #{rgba($primary-600, 0.18)};
+        --edit-text: #{$dark-link};
+        --disable-bg: #{rgba($warning-700, 0.2)};
+        --disable-text: #{$status-warning};
+        --enable-bg: #{rgba($success-700, 0.2)};
+        --enable-text: #{$success-200};
+        --active-bg: #{rgba($success-700, 0.18)};
+        --active-text: #{$success-200};
+        --active-ring: #{rgba($success-200, 0.2)};
+        --inactive-bg: #{$dark-surface-hover};
+        --inactive-text: #{$neutral-400};
+        --inactive-ring: #{$dark-border};
+        --icon: #{$neutral-400};
+        --icon-hover-bg: #{rgba($status-critical, 0.18)};
+        --skeleton: #{$dark-surface-hover};
+    }
+
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    min-width: 960px;
+    border-collapse: collapse;
+    font-size: $font-size-sm;
+
+    thead th {
+        padding: 14px 20px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-weight: $font-weight-semibold;
+        color: var(--header-text);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    tbody td {
+        height: 69px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        color: var(--row-text);
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    tbody tr:hover td {
+        background-color: var(--row-hover);
+    }
+}
+
+.rowInactive td {
+    .name,
+    .email {
+        opacity: 0.6;
+    }
+}
+
+.actionsCell {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.userCell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+    color: $neutral-100;
+    background-color: var(--avatar-bg);
+    border-radius: 50%;
+}
+
+.name {
+    color: var(--name-text);
+    text-transform: uppercase;
+}
+
+.email {
+    white-space: nowrap;
+}
+
+.youTag {
+    padding: 2px 8px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: $font-weight-semibold;
+    color: var(--tag-text);
+    background-color: var(--tag-bg);
+    border-radius: 999px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    border-radius: $radius-sm;
+    white-space: nowrap;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.badgeActive {
+    color: var(--active-text);
+    background-color: var(--active-bg);
+    box-shadow: inset 0 0 0 1px var(--active-ring);
+}
+
+.badgeInactive {
+    color: var(--inactive-text);
+    background-color: var(--inactive-bg);
+    box-shadow: inset 0 0 0 1px var(--inactive-ring);
+}
+
+.roleCell {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.roleIcon {
+    flex-shrink: 0;
+    font-size: 16px;
+    color: var(--role-icon);
+}
+
+.roleText {
+    white-space: nowrap;
+}
+
+.roleSelect {
+    height: 34px;
+    max-width: 320px;
+    padding: 0 34px 0 12px;
+    font-family: $font-family-base;
+    font-size: 13px;
+    color: var(--row-text);
+    background-color: var(--select-bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid var(--select-border);
+    border-radius: $radius-sm;
+    appearance: none;
+    cursor: pointer;
+    text-overflow: ellipsis;
+
+    [data-theme='dark'] & {
+        color-scheme: dark;
+    }
+
+    &:focus-visible {
+        outline: none;
+        border-color: $primary-600;
+        box-shadow: 0 0 0 3px rgba($primary-600, 0.2);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: progress;
+    }
+}
+
+// Left-aligned like the reference, so "Editar" lines up even when a row has fewer actions.
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    font-family: $font-family-base;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: $transition;
+
+    svg {
+        font-size: 14px;
+    }
+
+    &:hover {
+        filter: brightness(0.96);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+        outline-offset: 2px;
+    }
+}
+
+.pillEdit {
+    color: var(--edit-text);
+    background-color: var(--edit-bg);
+}
+
+.pillDisable {
+    color: var(--disable-text);
+    background-color: var(--disable-bg);
+}
+
+.pillEnable {
+    color: var(--enable-text);
+    background-color: var(--enable-bg);
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 16px;
+    color: var(--icon);
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+        color: $status-critical;
+        background-color: var(--icon-hover-bg);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba($primary-600, 0.5);
+    }
+}
+
+.skeleton {
+    display: inline-block;
+    height: 12px;
+    border-radius: 6px;
+    background-color: var(--skeleton);
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.45;
+    }
+}

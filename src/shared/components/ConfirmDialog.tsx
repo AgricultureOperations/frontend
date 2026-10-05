@@ -11,9 +11,11 @@ interface Props {
     onConfirm: () => void;
     onCancel: () => void;
     loading?: boolean;
+    // "primary" for a non-destructive confirmation (e.g. re-enabling a user).
+    confirmVariant?: "danger" | "primary";
 }
 
-export const ConfirmDialog = ({ title, message, confirmLabel, onConfirm, onCancel, loading = false }: Props) => (
+export const ConfirmDialog = ({ title, message, confirmLabel, onConfirm, onCancel, loading = false, confirmVariant = "danger" }: Props) => (
     <Modal
         title={title}
         onClose={onCancel}
@@ -23,7 +25,7 @@ export const ConfirmDialog = ({ title, message, confirmLabel, onConfirm, onCance
         footer={
             <>
                 <Button variant="outline" onClick={onCancel} disabled={loading}>Cancelar</Button>
-                <Button variant="danger" onClick={onConfirm} loading={loading}>{confirmLabel}</Button>
+                <Button variant={confirmVariant} onClick={onConfirm} loading={loading}>{confirmLabel}</Button>
             </>
         }
     >
